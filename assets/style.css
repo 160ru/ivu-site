@@ -874,3 +874,79 @@ p:last-child { margin-bottom: 0; }
   .site-footer { background: #fff; color: #000; }
   .site-footer a { color: #000; }
 }
+
+/* ============================================================
+   Восемь направлений, партнёрские логотипы, «О компании» без фото
+   ============================================================ */
+
+.cards--8 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.partners { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.partner {
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 18px 14px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-align: center;
+  transition: border-color .18s ease;
+}
+.partner:hover { border-color: var(--blue); }
+
+.partner img {
+  max-height: 38px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  filter: grayscale(1) opacity(.75);
+  transition: filter .18s ease;
+}
+.partner:hover img { filter: none; }
+
+.partner .partner__name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  display: block;
+}
+
+.partner.has-logo .partner__name { display: none; }
+.partner.no-logo img { display: none; }
+
+/* Фото офиса убрано — текст слева, преимущества в карточке справа */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+}
+.about-text { max-width: 60ch; }
+.about-aside {
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--blue);
+  border-radius: var(--radius);
+  padding: 26px 28px;
+  background: var(--white);
+}
+.about-aside .ticks { margin-top: 0; }
+
+@media (max-width: 1020px) {
+  .cards--8 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .about { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .partners { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .cards--8 { grid-template-columns: 1fr; }
+}

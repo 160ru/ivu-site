@@ -101,3 +101,16 @@
   const year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
 })();
+
+// Логотипы партнёров: если файл не загрузился, показываем название текстом
+(function () {
+  "use strict";
+  document.querySelectorAll(".partner").forEach((item) => {
+    const img = item.querySelector("img");
+    if (!img) return;
+    const apply = (ok) => item.classList.add(ok ? "has-logo" : "no-logo");
+    if (img.complete) apply(img.naturalWidth > 0);
+    img.addEventListener("load", () => apply(true));
+    img.addEventListener("error", () => apply(false));
+  });
+})();
