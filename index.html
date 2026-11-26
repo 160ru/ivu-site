@@ -161,44 +161,44 @@
           </p>
         </header>
 
-        <div class="services">
-          <article class="service">
-            <span class="service__num" aria-hidden="true">01</span>
+        <div class="cards cards--8">
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">01</span>
             <h3>Продажа компьютеров</h3>
             <p>Сборка ПК и серверов под задачу, ноутбуки и комплектующие. Оптом и в розницу.</p>
           </article>
-          <article class="service">
-            <span class="service__num" aria-hidden="true">02</span>
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">02</span>
             <h3>Ремонт и сервис</h3>
             <p>Диагностика и ремонт любой сложности, обслуживание парка техники.</p>
           </article>
-          <article class="service">
-            <span class="service__num" aria-hidden="true">03</span>
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">03</span>
             <h3>Внедрение 1С</h3>
             <p>Продажа, настройка и полное сопровождение «1С:Предприятие».</p>
           </article>
-          <article class="service">
-            <span class="service__num" aria-hidden="true">04</span>
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">04</span>
             <h3>Серверы и сети</h3>
             <p>Серверы под сервисы — 1С, телефония, камеры. Локальные сети и IT-инфраструктура.</p>
           </article>
-          <article class="service">
-            <span class="service__num" aria-hidden="true">05</span>
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">05</span>
             <h3>Видеонаблюдение</h3>
             <p>Проектирование и монтаж камер, регистраторов и удалённого просмотра.</p>
           </article>
-          <article class="service">
-            <span class="service__num" aria-hidden="true">06</span>
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">06</span>
             <h3>IP-АТС</h3>
             <p>Офисная и облачная телефония: подбор станции, номера, сценарии звонков.</p>
           </article>
-          <article class="service">
-            <span class="service__num" aria-hidden="true">07</span>
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">07</span>
             <h3>Интеграция</h3>
             <p>Связываем 1С, телефонию, камеры и учёт в один рабочий контур.</p>
           </article>
-          <article class="service">
-            <span class="service__num" aria-hidden="true">08</span>
+          <article class="card">
+            <span class="card-icon" aria-hidden="true">08</span>
             <h3>Умная и бытовая техника</h3>
             <p>Подбор, продажа и настройка умных устройств и бытовой техники.</p>
           </article>
@@ -242,16 +242,18 @@
             Нам не нужно пересказывать задачу дважды: продажа, ремонт
             и сервис — это одни и те же люди, которые знают вашу технику.
           </p>
+        </div>
+
+        <div class="about-aside">
+          <ul class="ticks">
+            <li>Официальный франчайзи 1С</li>
+            <li>Собственные серверы под сервисы: 1С, телефония, камеры</li>
+            <li>Реквизиты и договор — открытые, работаем с юрлицами</li>
+          </ul>
           <p class="about-more">
             <a class="link-arrow" href="requisites.html">Реквизиты и банковские данные →</a>
           </p>
         </div>
-
-        <ul class="about-list">
-          <li><span>01</span>Официальный франчайзи 1С</li>
-          <li><span>02</span>Собственные серверы под сервисы: 1С, телефония, камеры</li>
-          <li><span>03</span>Реквизиты и договор — открытые, работаем с юрлицами</li>
-        </ul>
       </div>
     </section>
 
@@ -320,28 +322,20 @@
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <p class="footer-brand__name">Интер-Техника<span class="plus">+</span></p>
-          <p>Компьютеры, 1С, видеонаблюдение и связь для бизнеса</p>
-        </div>
-        <div class="footer-col">
-          <p class="footer-col__title">Контакты</p>
-          <p><a href="tel:+74932353070">+7 4932 353070</a></p>
-          <p>Пн–Пт, 11:00–18:00</p>
-          <p>Иваново, ул. Степанова, 24</p>
-        </div>
-        <div class="footer-col">
-          <p class="footer-col__title">Документы</p>
-          <p><a href="requisites.html">Реквизиты</a></p>
-          <p><a href="privacy.html">Политика конфиденциальности</a></p>
-        </div>
-      </div>
-      <div class="footer-bottom">
+    <div class="container footer-inner">
+      <div class="footer-brand">
         <p>© 1999–<span id="year">2026</span>, ООО «Интер-Техника-Плюс». Все права защищены.</p>
-        <p><a href="#top">Наверх ↑</a></p>
+        <span class="phone-group">
+          <a href="tel:+74932353070">+7 4932 353070</a>
+          <button class="copy copy--icon copy--icon--sm" type="button" data-copy="+7 4932 353070" aria-label="Скопировать номер телефона" title="Скопировать номер">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.5"/><rect x="6.5" y="6.5" width="7" height="7" rx="1.5"/></svg>
+          </button>
+        </span>
       </div>
+      <nav aria-label="Служебные ссылки">
+        <a href="requisites.html">Реквизиты</a>
+        <a href="privacy.html">Политика конфиденциальности</a>
+      </nav>
     </div>
   </footer>
 
