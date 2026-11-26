@@ -296,10 +296,16 @@
         </div>
 
         <div class="contacts-map">
-          <!-- TODO: Яндекс.Карты → «Поделиться» → «Код для сайта» (iframe) -->
-          <div class="media-placeholder media-placeholder--map" role="img" aria-label="Место для карты проезда">
-            <span>Карта: Иваново,<br>ул. Степанова, 24</span>
+          <!-- Карта Яндекса с меткой на доме. Координаты: 56.99736, 40.97433 -->
+          <div class="map-embed">
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?ll=40.974334%2C56.997362&amp;z=17&amp;pt=40.974334,56.997362,pm2rdm"
+              title="Интер-Техника-Плюс на карте: Иваново, улица Степанова, 24"
+              loading="lazy"
+              allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
+          <a class="link-arrow map-link" href="https://yandex.ru/maps/?text=Иваново%2C%20улица%20Степанова%2C%2024" target="_blank" rel="noopener">Открыть в Яндекс.Картах →</a>
         </div>
       </div>
     </section>
