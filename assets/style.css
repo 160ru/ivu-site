@@ -951,3 +951,5 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 620px) {
   .cards--8 { grid-template-columns: 1fr; }
 }
+/* Логотип «Линия» обрезан по знаку — чуть уменьшаем, чтобы не перевешивал соседей */
+.partner img[src$="devline.svg"] { max-height: 30px; }
