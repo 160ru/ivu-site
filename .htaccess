@@ -1,0 +1,66 @@
+# Конфигурация Apache для виртуального хостинга Beget.
+# Файл кладётся в public_html рядом с index.html и начинает работать сразу.
+
+# Кодировка по умолчанию
+AddDefaultCharset UTF-8
+
+# Главная страница
+DirectoryIndex index.html
+
+# Своя страница 404
+ErrorDocument 404 /404.html
+
+# Запрет листинга каталогов (если нет index.html)
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+
+# Скрываем служебные файлы от посторонних
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. www.ivu.ru -> ivu.ru (один канонический адрес, чтобы не дублировать контент)
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # 2. http -> https
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# Сжатие текстовых файлов
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE application/xml image/svg+xml
+</IfModule>
+
+# Кэширование статики в браузере
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+</IfModule>
+
+# Базовые защитные заголовки
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Правильные типы для современных форматов
+AddType image/svg+xml .svg
+AddType image/webp .webp
+AddType font/woff2 .woff2
