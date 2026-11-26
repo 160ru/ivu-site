@@ -882,7 +882,7 @@ p:last-child { margin-bottom: 0; }
 
 .cards--8 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
-.partners { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.partners { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 .partner {
   display: grid;
