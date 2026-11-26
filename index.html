@@ -72,24 +72,38 @@
 
   <main id="main">
     <section class="hero">
-      <div class="container hero-inner">
-        <p class="eyebrow">Иваново · с 1999 года</p>
-        <h1 class="hero-title">
-          Комплектующие и компьютеры<br>
-          <em>для вашего бизнеса</em>
-        </h1>
-        <p class="hero-lead">
-          От сборки сервера и ремонта до полного внедрения 1С
-          и IT-аутсорсинга в Иваново.
-        </p>
-        <div class="hero-actions">
-          <a class="btn" href="#services">Наши услуги</a>
-          <span class="phone-group">
-            <a class="btn btn--ghost" href="tel:+74932353070">+7 4932 353070</a>
-            <button class="copy copy--icon" type="button" data-copy="+7 4932 353070" aria-label="Скопировать номер телефона" title="Скопировать номер">
-              <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.5"/><rect x="6.5" y="6.5" width="7" height="7" rx="1.5"/></svg>
-            </button>
-          </span>
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-main">
+            <p class="eyebrow">Иваново · с 1999 года</p>
+            <h1 class="hero-title">
+              Комплектующие и компьютеры<br>
+              <em>для вашего бизнеса</em>
+            </h1>
+            <p class="hero-lead">
+              От сборки сервера и ремонта до полного внедрения 1С
+              и IT-аутсорсинга в Иваново.
+            </p>
+            <div class="hero-actions">
+              <a class="btn" href="#services">Наши услуги</a>
+              <a class="btn btn--ghost" href="#contacts">Как нас найти</a>
+            </div>
+          </div>
+
+          <aside class="hero-card" aria-label="Контакты">
+            <p class="hero-card__label">Звоните или приходите</p>
+            <p class="hero-card__address">Иваново,<br>ул. Степанова, 24</p>
+            <p class="hero-card__note">Вход с левой стороны здания, 1 этаж</p>
+            <div class="hero-card__row">
+              <a class="hero-card__phone" href="tel:+74932353070">+7 4932 353070</a>
+            </div>
+            <span class="phone-group">
+              <a class="btn btn--sm" href="tel:+74932353070">Позвонить</a>
+              <button class="copy copy--icon" type="button" data-copy="+7 4932 353070" aria-label="Скопировать номер телефона" title="Скопировать номер">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.5"/><rect x="6.5" y="6.5" width="7" height="7" rx="1.5"/></svg>
+              </button>
+            </span>
+          </aside>
         </div>
 
         <dl class="facts">
@@ -303,6 +317,11 @@
       </nav>
     </div>
   </footer>
+
+  <div class="mobile-bar">
+    <a class="btn" href="tel:+74932353070">Позвонить</a>
+    <a class="btn btn--ghost" href="#services">Услуги</a>
+  </div>
 
   <script src="assets/app.js" defer></script>
 </body>
