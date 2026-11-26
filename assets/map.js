@@ -1,57 +1,79 @@
-// Карта на OpenStreetMap через Leaflet.
-// Без API-ключей, без рекламы и без внешних CDN: библиотека лежит в assets/vendor/leaflet.
-// Тайлы грузятся из tile.openstreetmap.org только когда карта доскроллена до экрана.
+// Карта Яндекса через JavaScript API 2.1.
+// Ключ привязан к домену: в кабинете developer.tech.yandex.ru должны быть
+// перечислены ivu.ru, www.ivu.ru и 160ru.github.io.
+//
+// Скрипт API грузится после события load — первый экран остаётся быстрым.
+//
+// Условия бесплатного использования: открытый сайт, логотип и копирайт Яндекса
+// не скрывать, кнопка «Открыть в Картах» должна быть доступна (она в контролах),
+// лимит запросов в сутки не превышать. Снятие рекламы — платный тариф.
 
 (function () {
   "use strict";
 
   const box = document.getElementById("map");
-  if (!box || typeof L === "undefined") return;
+  if (!box) return;
 
+  const KEY = "af813594-a490-459e-9232-c618f5be01c6";
   const LAT = 56.99736;
   const LON = 40.97433;
-  const ADDRESS = "Иваново, ул. Степанова, 24";
 
-  function init() {
-    const map = L.map(box, {
-      center: [LAT, LON],
-      zoom: 17,
-      scrollWheelZoom: false,   // не перехватываем прокрутку страницы
-      zoomControl: true
-    });
+  let loading = false;
 
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+  function loadApi() {
+    if (loading) return;
+    loading = true;
 
-    const pin = L.divIcon({
-      className: "map-pin",
-      html: "<span></span>",
-      iconSize: [28, 36],
-      iconAnchor: [14, 36],
-      popupAnchor: [0, -32]
-    });
-
-    L.marker([LAT, LON], { icon: pin, title: "Интер-Техника-Плюс" })
-      .addTo(map)
-      .bindPopup("<strong>Интер-Техника-Плюс</strong><br>" + ADDRESS)
-      .openPopup();
+    const script = document.createElement("script");
+    script.src =
+      "https://api-maps.yandex.ru/2.1/?apikey=" + encodeURIComponent(KEY) + "&lang=ru_RU";
+    script.onload = initMap;
+    script.onerror = function () {
+      box.classList.add("map-failed");
+    };
+    document.head.appendChild(script);
   }
 
-  // Загружаем карту при приближении к экрану, а не сразу при открытии страницы
-  if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          observer.disconnect();
-          init();
+  function initMap() {
+    if (typeof ymaps === "undefined") return;
+
+    ymaps.ready(function () {
+      const map = new ymaps.Map(box, {
+        center: [LAT, LON],
+        zoom: 17,
+        controls: ["zoomControl"]
+      });
+
+      // Колесо мыши не должно перехватывать прокрутку страницы
+      map.behaviors.disable("scrollZoom");
+
+      const placemark = new ymaps.Placemark(
+        [LAT, LON],
+        {
+          balloonContentHeader: "Интер-Техника-Плюс",
+          balloonContentBody:
+            "Иваново, ул. Степанова, 24<br>вход с левой стороны здания, 1 этаж" +
+            "<br><br>Пн–Пт, 11:00–18:00"
+        },
+        { preset: "islands#redIcon" }
+      );
+
+      map.geoObjects.add(placemark);
+
+      // Контейнер мог получить размеры уже после инициализации — пересчитываем
+      setTimeout(function () {
+        if (map.container && typeof map.container.fitToViewport === "function") {
+          map.container.fitToViewport();
         }
-      },
-      { rootMargin: "300px" }
-    );
-    observer.observe(box);
+      }, 100);
+    });
+  }
+
+  // Карту подключаем после полной загрузки страницы: она не мешает
+  // первому экрану, но и не зависит от того, дошёл ли посетитель до низа.
+  if (document.readyState === "complete") {
+    loadApi();
   } else {
-    init();
+    window.addEventListener("load", loadApi);
   }
 })();
