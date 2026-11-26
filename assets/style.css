@@ -1033,3 +1033,10 @@ p:last-child { margin-bottom: 0; }
   font-size: .9rem;
   color: var(--ink-soft);
 }
+/* Пояснение под кнопками первого экрана */
+.hero-note {
+  margin: 18px 0 0;
+  font-size: .85rem;
+  color: var(--ink-soft);
+  max-width: 44ch;
+}
