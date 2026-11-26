@@ -5,14 +5,13 @@
   <title>OG-картинка 1200×630</title>
   <!-- Служебный файл: из него рендерится assets/og.png. На сайт не выкладывается. -->
   <style>
-    @page { margin: 0; }
     * { box-sizing: border-box; }
     html, body { margin: 0; width: 1200px; height: 630px; }
     body {
-      background: #0039a6;
-      color: #fff;
+      background: #ffffff;
+      color: #0d1b2a;
       font-family: "Bahnschrift", "Segoe UI", Arial, sans-serif;
-      padding: 72px 80px;
+      padding: 64px 80px 0;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -21,59 +20,54 @@
     }
     .glow {
       position: absolute;
-      width: 900px; height: 900px;
-      right: -320px; top: -420px;
-      background: radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 62%);
+      width: 1000px; height: 700px;
+      right: -380px; top: -260px;
+      background: radial-gradient(circle, #e8eef8 0%, transparent 65%);
     }
-    .top { display: flex; align-items: center; gap: 22px; position: relative; }
-    .mark { width: 92px; height: 92px; border-radius: 18px; display: block; }
-    .name { font-size: 40px; font-weight: 600; letter-spacing: -.4px; }
-    .name span { color: #ff6b5f; }
-    .rule { width: 64px; height: 6px; background: #d52b1e; margin: 34px 0 26px; }
+    .logo { height: 84px; width: auto; align-self: flex-start; position: relative; }
+    .rule { width: 64px; height: 6px; background: #e8552f; margin: 40px 0 24px; position: relative; }
     h1 {
       font-size: 58px;
       line-height: 1.08;
       font-weight: 600;
       letter-spacing: -1px;
       margin: 0;
-      max-width: 980px;
+      max-width: 960px;
       position: relative;
     }
+    h1 em { font-style: normal; color: #3060a0; }
     .bottom {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      gap: 40px;
-      font-size: 27px;
+      border-top: 1px solid #dde3ea;
+      padding: 26px 0 34px;
+      font-size: 25px;
       position: relative;
     }
-    .bottom .phone { font-size: 34px; font-weight: 600; }
-    .bottom .muted { color: #b9cdf2; }
+    .bottom .muted { color: #526272; }
+    .bottom .phone { font-size: 32px; font-weight: 600; color: #3060a0; }
+    .stripe { position: absolute; left: 0; right: 0; bottom: 0; height: 12px; display: flex; }
+    .stripe i { flex: 1; }
+    .stripe .s1 { background: #ffffff; border-top: 1px solid #dde3ea; }
+    .stripe .s2 { background: #3060a0; }
+    .stripe .s3 { background: #e8552f; }
   </style>
 </head>
 <body>
   <div class="glow"></div>
-
-  <div class="top">
-    <svg class="mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="64" height="64" rx="12" fill="#ffffff"/>
-      <rect x="13" y="17" width="7" height="30" fill="#0039a6"/>
-      <rect x="24" y="17" width="25" height="7" fill="#0039a6"/>
-      <rect x="33" y="17" width="7" height="30" fill="#0039a6"/>
-      <rect x="43" y="47" width="17" height="5" fill="#d52b1e"/>
-      <rect x="49" y="41" width="5" height="17" fill="#d52b1e"/>
-    </svg>
-    <div class="name">Интер-Техника<span>+</span></div>
-  </div>
+  <img class="logo" src="../assets/logo.png" alt="">
 
   <div>
     <div class="rule"></div>
-    <h1>Комплектующие и компьютеры<br>для вашего бизнеса</h1>
+    <h1>Комплектующие и компьютеры<br><em>для вашего бизнеса</em></h1>
   </div>
 
   <div class="bottom">
     <div class="muted">Иваново, ул. Степанова, 24 · с 1999 года</div>
     <div class="phone">+7 4932 353070</div>
   </div>
+
+  <div class="stripe"><i class="s1"></i><i class="s2"></i><i class="s3"></i></div>
 </body>
 </html>

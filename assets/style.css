@@ -1,6 +1,6 @@
 /* ============================================================
    Интер-Техника-Плюс — стили сайта
-   Палитра: белый, синий и красный (цвета флага), тёмный контур.
+   Палитра взята из логотипа: синий, красно-оранжевый, белый.
    Без внешних запросов: системные шрифты, никаких CDN.
    Все цвета и размеры — в :root, остальное подстраивается.
    ============================================================ */
@@ -13,11 +13,11 @@
   --ink-soft: #526272;
   --line: #dde3ea;
 
-  --blue: #0039a6;        /* синий флага */
-  --blue-dark: #002a7a;
-  --blue-soft: #e8eefb;
-  --red: #d52b1e;         /* красный флага */
-  --red-dark: #b02318;
+  --blue: #3060a0;        /* синий из логотипа */
+  --blue-dark: #24487a;
+  --blue-soft: #e8eef8;
+  --red: #e8552f;         /* красно-оранжевый из логотипа */
+  --red-dark: #c8431f;
 
   /* Типографика */
   --font-display: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
@@ -157,11 +157,10 @@ p:last-child { margin-bottom: 0; }
 }
 
 .brand-logo {
-  width: 40px;
-  height: 40px;
+  height: 44px;
+  width: auto;
   flex: none;
   display: block;
-  border-radius: 8px;
 }
 
 .brand-name {
@@ -519,7 +518,7 @@ p:last-child { margin-bottom: 0; }
   place-items: center;
   aspect-ratio: 4 / 5;
   background:
-    repeating-linear-gradient(45deg, transparent 0 10px, rgba(0, 57, 166, .05) 10px 20px),
+    repeating-linear-gradient(45deg, transparent 0 10px, rgba(48, 96, 160, .06) 10px 20px),
     var(--white);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -825,6 +824,7 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 700px) {
   .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fact { padding: 18px 16px; }
+  .brand-logo { height: 38px; }
 }
 
 @media (max-width: 620px) {
