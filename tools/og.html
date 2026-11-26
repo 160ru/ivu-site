@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>OG-картинка 1200×630</title>
+  <!-- Служебный файл: из него рендерится assets/og.png. На сайт не выкладывается. -->
+  <style>
+    @page { margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1200px; height: 630px; }
+    body {
+      background: #0039a6;
+      color: #fff;
+      font-family: "Bahnschrift", "Segoe UI", Arial, sans-serif;
+      padding: 72px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .glow {
+      position: absolute;
+      width: 900px; height: 900px;
+      right: -320px; top: -420px;
+      background: radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 62%);
+    }
+    .top { display: flex; align-items: center; gap: 22px; position: relative; }
+    .mark { width: 92px; height: 92px; border-radius: 18px; display: block; }
+    .name { font-size: 40px; font-weight: 600; letter-spacing: -.4px; }
+    .name span { color: #ff6b5f; }
+    .rule { width: 64px; height: 6px; background: #d52b1e; margin: 34px 0 26px; }
+    h1 {
+      font-size: 58px;
+      line-height: 1.08;
+      font-weight: 600;
+      letter-spacing: -1px;
+      margin: 0;
+      max-width: 980px;
+      position: relative;
+    }
+    .bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 40px;
+      font-size: 27px;
+      position: relative;
+    }
+    .bottom .phone { font-size: 34px; font-weight: 600; }
+    .bottom .muted { color: #b9cdf2; }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+
+  <div class="top">
+    <svg class="mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="64" height="64" rx="12" fill="#ffffff"/>
+      <rect x="13" y="17" width="7" height="30" fill="#0039a6"/>
+      <rect x="24" y="17" width="25" height="7" fill="#0039a6"/>
+      <rect x="33" y="17" width="7" height="30" fill="#0039a6"/>
+      <rect x="43" y="47" width="17" height="5" fill="#d52b1e"/>
+      <rect x="49" y="41" width="5" height="17" fill="#d52b1e"/>
+    </svg>
+    <div class="name">Интер-Техника<span>+</span></div>
+  </div>
+
+  <div>
+    <div class="rule"></div>
+    <h1>Комплектующие и компьютеры<br>для вашего бизнеса</h1>
+  </div>
+
+  <div class="bottom">
+    <div class="muted">Иваново, ул. Степанова, 24 · с 1999 года</div>
+    <div class="phone">+7 4932 353070</div>
+  </div>
+</body>
+</html>

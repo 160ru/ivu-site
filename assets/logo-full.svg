@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" role="img" aria-label="Интер-Техника-Плюс">
+  <title>Интер-Техника-Плюс</title>
+  <rect width="64" height="64" rx="12" fill="#0039a6"/>
+  <rect x="13" y="17" width="7" height="30" fill="#ffffff"/>
+  <rect x="24" y="17" width="25" height="7" fill="#ffffff"/>
+  <rect x="33" y="17" width="7" height="30" fill="#ffffff"/>
+  <rect x="43" y="47" width="17" height="5" fill="#d52b1e"/>
+  <rect x="49" y="41" width="5" height="17" fill="#d52b1e"/>
+  <text x="82" y="43"
+        font-family="Bahnschrift, 'Segoe UI', Arial, sans-serif"
+        font-size="27" font-weight="600" letter-spacing="-0.4" fill="#0d1b2a">Интер-Техника<tspan fill="#d52b1e">+</tspan></text>
+</svg>
