@@ -24,6 +24,7 @@
 
   <link rel="icon" href="assets/icon.png" type="image/png">
   <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="assets/style.css">
 
   <script type="application/ld+json">
@@ -309,14 +310,11 @@
         </div>
 
         <div class="contacts-map">
-          <!-- Карта Яндекса с меткой на доме. Координаты: 56.99736, 40.97433 -->
-          <div class="map-embed">
-            <iframe
-              src="https://yandex.ru/map-widget/v1/?ll=40.974334%2C56.997362&amp;z=17&amp;pt=40.974334,56.997362,pm2rdm"
-              title="Интер-Техника-Плюс на карте: Иваново, улица Степанова, 24"
-              loading="lazy"
-              allowfullscreen
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <!-- Карта OpenStreetMap. Координаты дома: 56.99736, 40.97433 -->
+          <div class="map-embed" id="map" role="application" aria-label="Карта: Иваново, улица Степанова, 24">
+            <noscript>
+              <a class="map-link" href="https://yandex.ru/maps/?text=Иваново%2C%20улица%20Степанова%2C%2024">Открыть карту</a>
+            </noscript>
           </div>
           <a class="link-arrow map-link" href="https://yandex.ru/maps/?text=Иваново%2C%20улица%20Степанова%2C%2024" target="_blank" rel="noopener">Открыть в Яндекс.Картах →</a>
         </div>
@@ -348,6 +346,7 @@
   </div>
 
   <script src="assets/app.js" defer></script>
+  <script src="assets/vendor/leaflet/leaflet.js" defer></script>
   <script src="assets/map.js" defer></script>
 </body>
 </html>

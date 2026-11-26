@@ -1,66 +1,57 @@
-// Карта Яндекса через Static API: картинка без рекламы, грузится одним запросом.
-//
-// ГДЕ ВЗЯТЬ КЛЮЧ (бесплатно, 5 минут):
-//   1. Открыть https://developer.tech.yandex.ru/services
-//   2. Войти под своим Яндекс-аккаунтом.
-//   3. «Подключить API» → «API Яндекс Карт» → Static API.
-//   4. Принять условия бесплатного использования.
-//   5. Создать ключ, тип «Static API». В ограничениях указать домены:
-//          ivu.ru
-//          www.ivu.ru
-//          160ru.github.io
-//   6. Скопировать ключ и вставить в const YANDEX_MAPS_KEY ниже.
-//
-// УСЛОВИЯ БЕСПЛАТНОГО ИСПОЛЬЗОВАНИЯ (кратко):
-//   • сайт должен быть открыт всем без регистрации — у нас так;
-//   • нельзя убирать логотип и копирайт Яндекса, нужна кнопка «Открыть в Картах»;
-//   • нельзя сохранять данные карты к себе;
-//   • лимит — 1 000 запросов в сутки, для визитки это с огромным запасом.
-//
-// Пока ключа нет — на странице остаётся встроенный виджет, сайт работает.
-
-const YANDEX_MAPS_KEY = "";
+// Карта на OpenStreetMap через Leaflet.
+// Без API-ключей, без рекламы и без внешних CDN: библиотека лежит в assets/vendor/leaflet.
+// Тайлы грузятся из tile.openstreetmap.org только когда карта доскроллена до экрана.
 
 (function () {
   "use strict";
 
-  const box = document.querySelector(".map-embed");
-  if (!box || !YANDEX_MAPS_KEY) return;
+  const box = document.getElementById("map");
+  if (!box || typeof L === "undefined") return;
 
-  const lon = "40.974334";
-  const lat = "56.997362";
-  const size = "650,450";
+  const LAT = 56.99736;
+  const LON = 40.97433;
+  const ADDRESS = "Иваново, ул. Степанова, 24";
 
-  const src =
-    "https://static-maps.yandex.ru/v1" +
-    "?ll=" + lon + "," + lat +
-    "&z=17" +
-    "&size=" + size +
-    "&pt=" + lon + "," + lat + ",pm2rdm" +
-    "&lang=ru_RU" +
-    "&apikey=" + encodeURIComponent(YANDEX_MAPS_KEY);
+  function init() {
+    const map = L.map(box, {
+      center: [LAT, LON],
+      zoom: 17,
+      scrollWheelZoom: false,   // не перехватываем прокрутку страницы
+      zoomControl: true
+    });
 
-  // Условия Яндекса требуют кнопку «Открыть в Картах» — картинка кликабельна
-  const link = document.createElement("a");
-  link.className = "map-image-link";
-  link.href = "https://yandex.ru/maps/?ll=" + lon + "%2C" + lat + "&pt=" + lon + "," + lat + "&z=17";
-  link.target = "_blank";
-  link.rel = "noopener";
-  link.setAttribute("aria-label", "Открыть адрес в Яндекс.Картах");
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
 
-  const img = document.createElement("img");
-  img.className = "map-image";
-  img.alt = "Интер-Техника-Плюс на карте: Иваново, улица Степанова, 24";
-  img.loading = "lazy";
-  img.decoding = "async";
+    const pin = L.divIcon({
+      className: "map-pin",
+      html: "<span></span>",
+      iconSize: [28, 36],
+      iconAnchor: [14, 36],
+      popupAnchor: [0, -32]
+    });
 
-  // Меняем виджет только когда карта реально загрузилась
-  img.addEventListener("load", () => {
-    link.appendChild(img);
-    box.textContent = "";
-    box.classList.add("is-static");
-    box.appendChild(link);
-  });
+    L.marker([LAT, LON], { icon: pin, title: "Интер-Техника-Плюс" })
+      .addTo(map)
+      .bindPopup("<strong>Интер-Техника-Плюс</strong><br>" + ADDRESS)
+      .openPopup();
+  }
 
-  img.src = src;
+  // Загружаем карту при приближении к экрану, а не сразу при открытии страницы
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          init();
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(box);
+  } else {
+    init();
+  }
 })();
