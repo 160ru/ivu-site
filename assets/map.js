@@ -38,6 +38,20 @@
     if (typeof ymaps === "undefined") return;
 
     ymaps.ready(function () {
+      // Высота карты = высота колонки с контактами минус ссылка под картой:
+      // так правая и левая колонки заканчиваются на одной линии.
+      function matchHeight() {
+        if (window.matchMedia("(max-width: 900px)").matches) return;
+        const info = document.querySelector(".contacts-info");
+        const link = document.querySelector(".map-link");
+        if (!info) return;
+        const reserve = link ? link.offsetHeight + 14 : 0;
+        const target = info.getBoundingClientRect().height - reserve;
+        if (target > 240) box.style.height = Math.round(target) + "px";
+      }
+
+      matchHeight();
+
       const map = new ymaps.Map(box, {
         center: [LAT, LON],
         zoom: 17,
@@ -60,12 +74,24 @@
 
       map.geoObjects.add(placemark);
 
-      // Контейнер мог получить размеры уже после инициализации — пересчитываем
-      setTimeout(function () {
+      function fit() {
         if (map.container && typeof map.container.fitToViewport === "function") {
           map.container.fitToViewport();
         }
-      }, 100);
+      }
+
+      fit();
+      setTimeout(fit, 150);
+      setTimeout(fit, 600);
+
+      // Колонка с картой тянется по высоте текста — следим за изменением размера
+      if (typeof ResizeObserver !== "undefined") {
+        let raf = 0;
+        new ResizeObserver(function () {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(fit);
+        }).observe(box);
+      }
     });
   }
 

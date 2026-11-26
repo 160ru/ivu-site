@@ -595,7 +595,13 @@ p:last-child { margin-bottom: 0; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(32px, 5vw, 64px);
-  align-items: start;
+  align-items: stretch;
+}
+
+/* Колонка с картой тянется на всю высоту текста */
+.contacts-map {
+  display: flex;
+  flex-direction: column;
 }
 
 .contact-list {
@@ -803,6 +809,7 @@ p:last-child { margin-bottom: 0; }
 
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; }
+  .map-embed { height: auto; aspect-ratio: 4 / 3; }
   .about,
   .contacts { grid-template-columns: 1fr; }
   .about-media { order: -1; max-width: 420px; }
@@ -1004,7 +1011,7 @@ p:last-child { margin-bottom: 0; }
 
 .map-embed {
   position: relative;
-  aspect-ratio: 4 / 3;
+  height: 420px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
