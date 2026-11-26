@@ -953,3 +953,15 @@ p:last-child { margin-bottom: 0; }
 }
 /* Логотип «Линия» обрезан по знаку — чуть уменьшаем, чтобы не перевешивал соседей */
 .partner img[src$="devline.svg"] { max-height: 30px; }
+/* Часы работы в карточке первого экрана */
+.hero-card__note { margin-bottom: 6px; }
+.hero-card__hours {
+  margin: 0 0 20px;
+  font-size: .92rem;
+  color: var(--ink-soft);
+}
+.hero-card__hours span {
+  font-weight: 600;
+  color: var(--ink);
+  margin-right: 6px;
+}
