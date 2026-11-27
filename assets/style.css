@@ -1182,3 +1182,5 @@ a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
 @media (max-width: 760px) {
   .news-list { grid-template-columns: 1fr; }
 }
+/* Без вводного абзаца заголовок новостей держим ближе к списку */
+#news .section-head { margin-bottom: 26px; }
