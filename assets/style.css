@@ -24,7 +24,7 @@
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 
   /* Сетка */
-  --wrap: clamp(1160px, 88vw, 1440px);
+  --wrap: clamp(1160px, 88vw, 1560px);
   --gutter: clamp(20px, 5vw, 48px);
   --radius: 8px;
   --shadow: 0 18px 40px -24px rgba(13, 27, 42, .35);
