@@ -28,7 +28,7 @@
   --gutter: clamp(20px, 5vw, 48px);
   --radius: 8px;
   --shadow: 0 18px 40px -24px rgba(13, 27, 42, .35);
-  --brand-size: 44px;   /* знак и надпись одного размера */
+  --brand-size: clamp(21px, calc(7.9vw - 3.5px), 44px);   /* знак и надпись одного размера, всегда влезают */
 }
 
 *,
@@ -854,7 +854,6 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 700px) {
   .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fact { padding: 18px 16px; }
-  
 }
 
 @media (max-width: 620px) {
@@ -1125,22 +1124,13 @@ p:last-child { margin-bottom: 0; }
 }
 
 @media (max-width: 700px) {
-  :root { --brand-size: 40px; }
   .brand { gap: 10px; }
+  .header-inner { padding-inline: 16px; }
   .header-inner { gap: 12px; }
   .nav-toggle { width: 40px; height: 40px; }
 }
 
-@media (max-width: 540px) {
-  :root { --brand-size: 34px; }
-}
-
 @media (max-width: 420px) {
-  :root { --brand-size: 28px; }
   .header-inner { padding-inline: 16px; }
-}
-
-@media (max-width: 370px) {
-  :root { --brand-size: 26px; }
 }
 
