@@ -288,10 +288,10 @@ ssh-keygen -t ed25519 -C "ivu-deploy" -f $env:USERPROFILE\.ssh\ivu_deploy
 
 | Имя | Значение | Где взять |
 |---|---|---|
-| `BEGET_HOST` | адрес сервера, например `u1234567.beget.tech` | панель, раздел SSH |
-| `BEGET_USER` | логин, например `u1234567` | там же |
+| `BEGET_HOST` | `ivu.ru` | домен, он же хост для SSH |
+| `BEGET_USER` | `itivura7` | логин аккаунта |
 | `BEGET_SSH_KEY` | **всё содержимое** файла `ivu_deploy` (с строками BEGIN/END) | созданный ключ |
-| `BEGET_PATH` | `/home/u1234567/ivu.ru/public_html` | файловый менеджер панели |
+| `BEGET_PATH` | `/home/i/itivura7/ivu.ru/public_html` | проверено по SSH |
 
 Точный путь посмотрите в файловом менеджере: у Бегета он вида
 `/home/<логин>/<домен>/public_html`.

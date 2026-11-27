@@ -24,13 +24,19 @@ ErrorDocument 404 /404.html
   RewriteEngine On
   RewriteBase /
 
+  # ВНИМАНИЕ: переход на https временно отключён — сертификат ещё не установлен.
+  # После установки сертификата в панели Бегета (раздел «SSL») раскомментируйте
+  # блок ниже, чтобы сайт открывался только по https.
+
   # 1. www.ivu.ru -> ivu.ru (один канонический адрес, чтобы не дублировать контент)
+  # Пока сертификата нет — переадресация по http; после установки SSL
+  # замените http:// на https:// в строке ниже.
   RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+  RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
 
   # 2. http -> https
-  RewriteCond %{HTTPS} !=on
-  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+  # RewriteCond %{HTTPS} !=on
+  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
 
 # Сжатие текстовых файлов

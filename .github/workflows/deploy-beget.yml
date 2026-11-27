@@ -1,15 +1,27 @@
 name: Выкладка на Beget
 
-# Запускается при каждом изменении ветки main — включая автоматические
-# коммиты новостей. То есть: новости обновились сами → сайт на Бегете
-# обновился сам.
+# Когда запускается:
+#  1. при каждом изменении ветки main;
+#  2. после автоматического обновления новостей (бот коммитит через GITHUB_TOKEN,
+#     а такие коммиты сами по себе новых запусков не вызывают — поэтому ловим
+#     завершение воркфлоу новостей отдельным триггером);
+#  3. вручную из вкладки Actions.
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: ["Обновление новостей"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# Два запуска подряд (например, пуш и обновление новостей) не должны
+# перезаписывать файлы одновременно.
+concurrency:
+  group: beget-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -41,13 +53,15 @@ jobs:
             --exclude='package.json' \
             --exclude='package-lock.json' \
             --exclude='*.zip' \
+            --exclude='*.bak' \
+            --exclude='cgi-bin' \
             --exclude='data/news-manual.json' \
             ./ "${{ secrets.BEGET_USER }}@${{ secrets.BEGET_HOST }}:${{ secrets.BEGET_PATH }}/"
 
       - name: Проверить, что сайт отвечает
         run: |
           sleep 3
-          code=$(curl -s -o /dev/null -w "%{http_code}" -L "https://ivu.ru/" || echo 000)
+          code=$(curl -s -o /dev/null -w "%{http_code}" "http://ivu.ru/" || echo 000)
           echo "ivu.ru отвечает: $code"
           if [ "$code" != "200" ]; then
             echo "::warning::Сайт вернул $code — проверьте вручную"
