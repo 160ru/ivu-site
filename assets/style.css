@@ -1184,3 +1184,58 @@ a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
 }
 /* Без вводного абзаца заголовок новостей держим ближе к списку */
 #news .section-head { margin-bottom: 26px; }
+/* ---------- Аудит ИТ-систем ---------- */
+
+.audit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(26px, 4vw, 52px);
+  align-items: start;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+}
+
+.audit__lead {
+  margin: 14px 0 0;
+  max-width: 44ch;
+  color: var(--ink-soft);
+}
+
+.audit__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 22px 0 0;
+}
+
+.audit__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.audit__list li {
+  position: relative;
+  padding-left: 26px;
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+.audit__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .45em;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--red);
+}
+
+.audit__list b { font-weight: 600; color: var(--ink); }
+
+@media (max-width: 860px) {
+  .audit { grid-template-columns: 1fr; }
+}
