@@ -1,6 +1,13 @@
 {
-  "generated": "2026-11-27T13:00:27.750Z",
+  "generated": "2026-11-27T18:48:26.577Z",
   "items": [
+    {
+      "title": "Учет ГОЗ в 1С по постановлению № 874 — от первички до отчёта по партии",
+      "url": "https://habr.com/ru/companies/infostart/articles/1113314/?utm_campaign=1113314&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-27",
+      "source": "Хабр · 1С",
+      "manual": false
+    },
     {
       "title": "Биржа заказов Инфостарта: кассы самообслуживания, маркировка и автоматизация бухгалтерии",
       "url": "https://habr.com/ru/companies/infostart/articles/1113008/?utm_campaign=1113008&utm_source=habrahabr&utm_medium=rss",
@@ -9,36 +16,29 @@
       "manual": false
     },
     {
-      "title": "Почему ИИ ускоряет работу команды 1С и что это меняет для заказчика",
-      "url": "https://habr.com/ru/companies/infostart/articles/1113000/?utm_campaign=1113000&utm_source=habrahabr&utm_medium=rss",
-      "date": "2026-11-27",
-      "source": "Хабр · 1С",
-      "manual": false
-    },
-    {
-      "title": "Из чего на самом деле складывается HWID в Windows 10/11: от MachineGuid и VSN до SMBIOS и TPM 2.0",
-      "url": "https://habr.com/ru/articles/1113178/?utm_campaign=1113178&utm_source=habrahabr&utm_medium=rss",
+      "title": "Beget: регистрация и перенос доменов снова доступны",
+      "url": "https://habr.com/ru/articles/1113388/?utm_campaign=1113388&utm_source=habrahabr&utm_medium=rss",
       "date": "2026-11-27",
       "source": "Хабр · Безопасность",
       "manual": false
     },
     {
-      "title": "Переход на сертификаты Минцифры: последствия для SEO, трафика и продаж",
-      "url": "https://habr.com/ru/articles/1113170/?utm_campaign=1113170&utm_source=habrahabr&utm_medium=rss",
+      "title": "Ratcast — продолжаем допиливать совместный стриминг без серверов и блокировок",
+      "url": "https://habr.com/ru/articles/1113374/?utm_campaign=1113374&utm_source=habrahabr&utm_medium=rss",
       "date": "2026-11-27",
       "source": "Хабр · Безопасность",
       "manual": false
     },
     {
-      "title": "24 открытых Django-проекта против моего статического парсера: код, которого нет в туториалах",
-      "url": "https://habr.com/ru/articles/1113182/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113182",
+      "title": "По ком звонит Гигачат?",
+      "url": "https://habr.com/ru/articles/1113400/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113400",
       "date": "2026-11-27",
       "source": "Хабр",
       "manual": false
     },
     {
-      "title": "Избавление от шума на MacBook m5 pro",
-      "url": "https://habr.com/ru/articles/1113180/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113180",
+      "title": "Половина работы моих ИИ-агентов уходит на хозяйство. На деньги 4%",
+      "url": "https://habr.com/ru/articles/1113396/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113396",
       "date": "2026-11-27",
       "source": "Хабр",
       "manual": false
