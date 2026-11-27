@@ -1,3 +1,22 @@
+/* Название компании — Rubik: закруглённые концы штрихов, как у знака «ИТ+».
+   Шрифт урезан до букв названия: 4,8 КБ вместо 52 КБ полного набора. */
+
+@font-face {
+  font-family: "Rubik Wordmark";
+  font-style: italic;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("fonts/rubik-wm-cyrillic.woff2") format("woff2");
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1;
+}
+@font-face {
+  font-family: "Rubik Wordmark";
+  font-style: italic;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("fonts/rubik-wm-latin.woff2") format("woff2");
+  unicode-range: U+0020-007E;
+}
 /* ---------- Шрифты ----------
    Inter Tight — заголовки, Inter — текст. Одна суперсемья: заголовки
    плотнее по ширине, текст просторнее. Оба с кириллицей, лицензия OFL.
@@ -66,7 +85,7 @@
   --gutter: clamp(20px, 5vw, 48px);
   --radius: 8px;
   --shadow: 0 18px 40px -24px rgba(13, 27, 42, .35);
-  --brand-size: clamp(20px, calc(7.4vw - 3px), 44px);   /* знак и надпись одного размера, всегда влезают */
+  --brand-size: clamp(20px, calc(7vw - 3px), 44px);   /* знак и надпись одного размера, всегда влезают */
 }
 
 *,
@@ -201,12 +220,12 @@ p:last-child { margin-bottom: 0; }
 }
 
 .brand-name {
-  font-family: var(--font-display);
+  font-family: "Rubik Wordmark", var(--font-display);
   font-size: var(--brand-size);
-  font-weight: 700;
+  font-weight: 800;
   font-style: italic;
   text-transform: uppercase;
-  letter-spacing: .005em;
+  letter-spacing: -.01em;
   line-height: 1;
   white-space: nowrap;
   color: var(--red);
