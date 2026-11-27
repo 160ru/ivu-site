@@ -61,7 +61,7 @@ jobs:
       - name: Проверить, что сайт отвечает
         run: |
           sleep 3
-          code=$(curl -s -o /dev/null -w "%{http_code}" "http://ivu.ru/" || echo 000)
+          code=$(curl -sL -o /dev/null -w "%{http_code}" "https://ivu.ru/" || echo 000)
           echo "ivu.ru отвечает: $code"
           if [ "$code" != "200" ]; then
             echo "::warning::Сайт вернул $code — проверьте вручную"
