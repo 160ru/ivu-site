@@ -55,6 +55,7 @@ jobs:
             --exclude='*.zip' \
             --exclude='*.bak' \
             --exclude='cgi-bin' \
+            --exclude='uploads' \
             --exclude='data/news-manual.json' \
             ./ "${{ secrets.BEGET_USER }}@${{ secrets.BEGET_HOST }}:${{ secrets.BEGET_PATH }}/"
 

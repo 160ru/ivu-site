@@ -1348,3 +1348,46 @@ a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
 .page-head { margin: clamp(28px, 4vw, 48px) 0 clamp(20px, 2.4vw, 28px); }
 /* Короткие страницы: подвал прижимается к низу окна */
 body > main { flex: 1 0 auto; }
+/* Витрина: поиск, галерея, «показать ещё» */
+.catalog-search { margin: 0 0 clamp(18px, 2.4vw, 26px); }
+.catalog-search input {
+  width: 100%;
+  max-width: 420px;
+  padding: 11px 14px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.catalog-status { margin: 18px 0 0; font-size: .85rem; color: var(--ink-soft); }
+.catalog-more { margin: 18px 0 0; }
+
+.product__media--empty { display: grid; place-items: center; }
+.product__nophoto {
+  font-size: .75rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.product__thumbs {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  gap: 6px;
+}
+.product__thumb {
+  padding: 0;
+  width: 44px;
+  height: 33px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  overflow: hidden;
+}
+.product__thumb img { width: 100%; height: 100%; object-fit: contain; }
+.product__thumb:hover { border-color: var(--blue); }

@@ -1,6 +1,5 @@
 // Витрины «Новая техника» и «Барахолка».
-// Данные лежат в data/products.json, фотографии — в assets/products/.
-// Формат записи описан в CATALOG.md.
+// Данные отдаёт catalog-api.php (PHP + SQLite на Бегете).
 
 (function () {
   "use strict";
@@ -10,11 +9,31 @@
 
   var category = root.getAttribute("data-category") || "new";
   var CHAT = "https://yandex.ru/maps/org/1043257440/";
+  var API = "catalog-api.php";
+  var PER = 24;
 
-  var EMPTY = {
+  var state = { page: 1, query: "", loading: false, total: 0 };
+
+  var emptyText = {
     new: "Пока пусто. Новая техника появится здесь, как только выставим первые позиции.",
     used: "Пока пусто. Барахолка откроется, как только появятся первые лоты."
   };
+
+  var grid = document.createElement("div");
+  grid.className = "catalog-grid";
+
+  var status = document.createElement("p");
+  status.className = "catalog-status";
+
+  var moreWrap = document.createElement("p");
+  moreWrap.className = "catalog-more";
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = text;
+    return node;
+  }
 
   function money(value) {
     var number = Number(value);
@@ -22,28 +41,51 @@
     return number.toLocaleString("ru-RU") + " ₽";
   }
 
-  function el(tag, className, text) {
-    var node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text) node.textContent = text;
-    return node;
+  function gallery(item) {
+    var photos = item.photos || [];
+    var wrap = el("div", "product__media");
+
+    if (!photos.length) {
+      wrap.classList.add("product__media--empty");
+      wrap.appendChild(el("span", "product__nophoto", "без фото"));
+      return wrap;
+    }
+
+    var img = document.createElement("img");
+    img.src = "uploads/products/" + photos[0];
+    img.alt = item.title || "";
+    img.loading = "lazy";
+    img.width = 640;
+    img.height = 480;
+    wrap.appendChild(img);
+
+    if (item.sold) wrap.appendChild(el("span", "product__sold", "продано"));
+
+    if (photos.length > 1) {
+      var thumbs = el("div", "product__thumbs");
+      photos.slice(0, 5).forEach(function (file) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "product__thumb";
+        var thumb = document.createElement("img");
+        thumb.src = "uploads/products/" + file;
+        thumb.alt = "";
+        thumb.loading = "lazy";
+        button.appendChild(thumb);
+        button.addEventListener("click", function () {
+          img.src = "uploads/products/" + file;
+        });
+        thumbs.appendChild(button);
+      });
+      wrap.appendChild(thumbs);
+    }
+
+    return wrap;
   }
 
   function card(item) {
     var article = el("article", "product");
-
-    if (item.image) {
-      var media = el("div", "product__media");
-      var img = document.createElement("img");
-      img.src = "assets/products/" + item.image;
-      img.alt = item.title || "";
-      img.loading = "lazy";
-      img.width = 640;
-      img.height = 480;
-      media.appendChild(img);
-      if (item.sold) media.appendChild(el("span", "product__sold", "продано"));
-      article.appendChild(media);
-    }
+    article.appendChild(gallery(item));
 
     var body = el("div", "product__body");
 
@@ -54,7 +96,6 @@
 
     body.appendChild(el("h2", "product__title", item.title || "Без названия"));
     body.appendChild(el("p", "product__price", money(item.price)));
-
     if (item.desc) body.appendChild(el("p", "product__desc", item.desc));
 
     if (!item.sold) {
@@ -72,7 +113,6 @@
       call.href = "tel:+74932353070";
       call.textContent = "Позвонить";
       actions.appendChild(call);
-
       body.appendChild(actions);
     }
 
@@ -92,31 +132,94 @@
     return article;
   }
 
-  function render(items) {
-    root.textContent = "";
-
-    if (!items.length) {
-      root.appendChild(el("p", "catalog-empty", EMPTY[category] || EMPTY.new));
-      return;
-    }
-
-    var grid = el("div", "catalog-grid");
+  function render(items, append) {
+    if (!append) grid.textContent = "";
     items.forEach(function (item) {
       grid.appendChild(card(item));
     });
-    root.appendChild(grid);
   }
 
-  fetch("data/products.json?v=" + Date.now())
-    .then(function (response) {
-      if (!response.ok) throw new Error("нет файла товаров");
-      return response.json();
-    })
-    .then(function (data) {
-      var list = (data && data[category]) || [];
-      render(list);
-    })
-    .catch(function () {
-      render([]);
+  function updateStatus() {
+    if (!state.total) {
+      status.textContent = "";
+      return;
+    }
+    status.textContent = "Показано " + grid.children.length + " из " + state.total;
+  }
+
+  function updateMore(pages) {
+    moreWrap.textContent = "";
+    if (state.page < pages) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn btn--ghost";
+      button.textContent = "Показать ещё";
+      button.addEventListener("click", function () {
+        state.page += 1;
+        load(true);
+      });
+      moreWrap.appendChild(button);
+    }
+  }
+
+  function load(append) {
+    if (state.loading) return;
+    state.loading = true;
+    status.textContent = "Загружаем…";
+
+    var url = API + "?cat=" + encodeURIComponent(category) +
+      "&page=" + state.page + "&per=" + PER +
+      (state.query ? "&q=" + encodeURIComponent(state.query) : "");
+
+    fetch(url, { headers: { "Accept": "application/json" } })
+      .then(function (response) {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        state.total = data.total || 0;
+        var items = data.items || [];
+
+        if (!append) {
+          root.textContent = "";
+          root.appendChild(grid);
+          root.appendChild(status);
+          root.appendChild(moreWrap);
+        }
+
+        if (!items.length && !append) {
+          root.textContent = "";
+          root.appendChild(el("p", "catalog-empty",
+            state.query ? "По запросу «" + state.query + "» ничего не нашлось." : (emptyText[category] || emptyText.new)));
+          return;
+        }
+
+        render(items, append);
+        updateStatus();
+        updateMore(data.pages || 1);
+      })
+      .catch(function () {
+        root.textContent = "";
+        root.appendChild(el("p", "catalog-empty", "Не удалось загрузить каталог. Обновите страницу."));
+      })
+      .then(function () {
+        state.loading = false;
+      });
+  }
+
+  // поиск
+  var searchBox = document.getElementById("catalog-search");
+  if (searchBox) {
+    var timer = null;
+    searchBox.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        state.query = searchBox.value.trim();
+        state.page = 1;
+        load(false);
+      }, 350);
     });
+  }
+
+  load(false);
 })();

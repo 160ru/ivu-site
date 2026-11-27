@@ -5,7 +5,7 @@
 AddDefaultCharset UTF-8
 
 # Главная страница
-DirectoryIndex index.html
+DirectoryIndex index.html index.php
 
 # Своя страница 404
 ErrorDocument 404 /404.html
@@ -55,6 +55,9 @@ ErrorDocument 404 /404.html
 
 # Базовые защитные заголовки
 <IfModule mod_headers.c>
+  <If "%{REQUEST_URI} =~ m#^/admin/#">
+    Header set X-Robots-Tag "noindex, nofollow"
+  </If>
   # HSTS: браузер год не будет обращаться к сайту по http, даже если попросить.
   # Включён вместе с поддоменами — других поддоменов, кроме www, у домена нет.
   # Чтобы отключить, замените max-age на 0 и дождитесь истечения срока у посетителей.
