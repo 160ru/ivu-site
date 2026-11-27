@@ -78,9 +78,27 @@ function checkCsrf(): void
     }
 }
 
-function translit(string $text): string
+/** Перезаписывает data/config.php, сохраняя уже заданные ключи. */
+function writeConfig(array $values, ?string $newPassword = null): bool
 {
-    $map = [
+    global $configFile;
+    $hash = defined('ADMIN_PASSWORD_HASH') ? ADMIN_PASSWORD_HASH : '';
+    if ($newPassword !== null && $newPassword !== '') {
+        $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+    }
+    $clientId = $values['yandex_id'] ?? (defined('YANDEX_CLIENT_ID') ? YANDEX_CLIENT_ID : '');
+    $clientSecret = $values['yandex_secret'] ?? (defined('YANDEX_CLIENT_SECRET') ? YANDEX_CLIENT_SECRET : '');
+
+    $content = "<?php\n"
+        . "define('ADMIN_PASSWORD_HASH', " . var_export($hash, true) . ");\n"
+        . "define('YANDEX_CLIENT_ID', " . var_export(trim((string) $clientId), true) . ");\n"
+        . "define('YANDEX_CLIENT_SECRET', " . var_export(trim((string) $clientSecret), true) . ");\n";
+
+    return @file_put_contents($configFile, $content) !== false;
+}
+
+function translit(string $text): string
+{    $map = [
         'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e',
         'ё' => 'e', 'ж' => 'zh', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k',
         'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r',
@@ -257,12 +275,25 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (mb_strlen($new) < 8) {
             $error = 'Новый пароль короче 8 символов';
         } else {
-            $config = "<?php\n" . "define('ADMIN_PASSWORD_HASH', '" . password_hash($new, PASSWORD_DEFAULT) . "');\n";
-            if (@file_put_contents($configFile, $config) !== false) {
+            if (writeConfig(['yandex_id' => defined('YANDEX_CLIENT_ID') ? YANDEX_CLIENT_ID : '',
+                             'yandex_secret' => defined('YANDEX_CLIENT_SECRET') ? YANDEX_CLIENT_SECRET : ''],
+                            $new)) {
                 $message = 'Пароль изменён';
             } else {
                 $error = 'Не удалось записать файл настроек';
             }
+        }
+    }
+
+    if ($action === 'yandex') {
+        $clientId = trim((string) ($_POST['yandex_id'] ?? ''));
+        $clientSecret = trim((string) ($_POST['yandex_secret'] ?? ''));
+        if (writeConfig(['yandex_id' => $clientId, 'yandex_secret' => $clientSecret])) {
+            $message = ($clientId !== '' && $clientSecret !== '')
+                ? 'Вход через Яндекс включён: теперь вопросы задают только авторизованные'
+                : 'Ключи очищены — вопросы снова принимаются без входа';
+        } else {
+            $error = 'Не удалось записать файл настроек';
         }
     }
     if ($action === 'comment-approve') {
@@ -518,6 +549,28 @@ $pages = max(1, (int) ceil($total / $perPage));
       <label><span>Текущий пароль</span><input type="password" name="old" autocomplete="current-password"></label>
       <label><span>Новый пароль (от 8 символов)</span><input type="password" name="new" autocomplete="new-password"></label>
       <p style="grid-column:1/-1;margin:0"><button class="btn btn--sm" type="submit">Сменить пароль</button></p>
+    </form>
+  </fieldset>
+
+  <fieldset>
+    <legend>Вход через Яндекс — вопросы от авторизованных</legend>
+    <form method="post" action="/admin/" class="row2">
+      <input type="hidden" name="action" value="yandex">
+      <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+      <label><span>Client ID</span>
+        <input type="text" name="yandex_id" value="<?= e(defined('YANDEX_CLIENT_ID') ? YANDEX_CLIENT_ID : '') ?>" placeholder="a1b2c3…">
+      </label>
+      <label><span>Client secret</span>
+        <input type="password" name="yandex_secret" value="<?= e(defined('YANDEX_CLIENT_SECRET') ? YANDEX_CLIENT_SECRET : '') ?>" autocomplete="off">
+      </label>
+      <p class="small" style="grid-column:1/-1;margin:0 0 8px">
+        Redirect URI для регистрации приложения:<br>
+        <code>https://<?= e($_SERVER['HTTP_HOST'] ?? 'ivu.ru') ?>/auth.php?action=callback</code>
+      </p>
+      <p style="grid-column:1/-1;margin:0">
+        <button class="btn btn--sm" type="submit">Сохранить ключи</button>
+        <span class="small">— пока поля пустые, вопросы принимаются без входа</span>
+      </p>
     </form>
   </fieldset>
   <fieldset>

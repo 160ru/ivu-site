@@ -217,6 +217,17 @@
     form.appendChild(status);
 
     panel.appendChild(form);
+
+    var loginBox = el("div", "modal__login");
+    var loginText = el("p", "modal__login-text", "");
+    var loginLink = document.createElement("a");
+    loginLink.className = "btn btn--sm";
+    loginLink.href = "auth.php?action=start";
+    loginLink.textContent = "Войти через Яндекс";
+    loginBox.appendChild(loginText);
+    loginBox.appendChild(loginLink);
+    panel.appendChild(loginBox);
+
     wrap.appendChild(panel);
 
     wrap.addEventListener("click", function (event) {
@@ -273,7 +284,7 @@
         .then(function () { submit.disabled = false; });
     });
 
-    modal = { wrap: wrap, title: title, list: list };
+    modal = { wrap: wrap, title: title, list: list, form: form, loginBox: loginBox, loginText: loginText, nameInput: nameInput, contactInput: contactInput };
     document.body.appendChild(wrap);
     return modal;
   }
@@ -304,6 +315,25 @@
     modal.list.textContent = "";
     modal.list.appendChild(el("p", "modal__empty", "Загружаем…"));
     modal.wrap.classList.add("is-open");
+
+    // если вход через Яндекс настроен — спрашивать могут только вошедшие
+    fetch("auth.php?action=me")
+      .then(function (response) { return response.json(); })
+      .then(function (auth) {
+        var needLogin = auth.configured && !auth.authorized;
+        modal.form.style.display = needLogin ? "none" : "";
+        modal.loginBox.style.display = needLogin ? "" : "none";
+
+        if (needLogin) {
+          modal.loginText.textContent =
+            "Вопросы могут задавать только авторизованные пользователи — так меньше спама. Вход через Яндекс занимает несколько секунд.";
+        } else if (auth.configured && auth.authorized) {
+          modal.nameInput.value = (auth.user && auth.user.name) || "";
+          modal.nameInput.readOnly = true;
+          if (modal.contactInput.parentNode) modal.contactInput.parentNode.style.display = "none";
+        }
+      })
+      .catch(function () { /* без ответа сервера показываем форму как есть */ });
 
     fetch("comments-api.php?item=" + item.id)
       .then(function (response) { return response.json(); })

@@ -17,6 +17,15 @@ header('Cache-Control: no-store');
 
 $base = dirname(__DIR__);
 $dbFile = $base . '/data/catalog.db';
+$configFile = $base . '/data/config.php';
+
+session_start();
+if (is_file($configFile)) {
+    require_once $configFile;
+}
+$yandexReady = defined('YANDEX_CLIENT_ID') && YANDEX_CLIENT_ID !== ''
+    && defined('YANDEX_CLIENT_SECRET') && YANDEX_CLIENT_SECRET !== '';
+$loggedUser = isset($_SESSION['yandex']) && is_array($_SESSION['yandex']) ? $_SESSION['yandex'] : null;
 
 function out(array $payload, int $code = 200): void
 {
@@ -107,6 +116,15 @@ try {
     $name = clean((string) ($data['name'] ?? ''), 60);
     $text = clean((string) ($data['text'] ?? ''), 1500);
     $contact = clean((string) ($data['contact'] ?? ''), 80);
+
+    // Если вход через Яндекс настроен — писать могут только вошедшие,
+    // имя берём из профиля.
+    if ($yandexReady) {
+        if ($loggedUser === null) {
+            out(['error' => 'Чтобы задать вопрос, войдите через Яндекс'], 401);
+        }
+        $name = clean((string) ($loggedUser['name'] ?? 'Пользователь Яндекса'), 60);
+    }
 
     if ($item <= 0) {
         out(['error' => 'Товар не найден'], 400);
