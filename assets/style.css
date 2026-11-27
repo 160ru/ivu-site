@@ -28,7 +28,7 @@
   --gutter: clamp(20px, 5vw, 48px);
   --radius: 8px;
   --shadow: 0 18px 40px -24px rgba(13, 27, 42, .35);
-  --brand-size: clamp(21px, calc(7.9vw - 3.5px), 44px);   /* знак и надпись одного размера, всегда влезают */
+  --brand-size: clamp(20px, calc(7.3vw - 3px), 44px);   /* знак и надпись одного размера, всегда влезают */
 }
 
 *,
@@ -1093,7 +1093,7 @@ p:last-child { margin-bottom: 0; }
   
   .brand { gap: 10px; }
   .header-inner { gap: 12px; }
-  .nav-toggle { width: 40px; height: 40px; }
+  .nav-toggle { width: 36px; height: 36px; }
 }
 
 @media (max-width: 480px) {
@@ -1127,11 +1127,11 @@ p:last-child { margin-bottom: 0; }
   .brand { gap: 10px; }
   .header-inner { padding-inline: 16px; }
   .header-inner { gap: 12px; }
-  .nav-toggle { width: 40px; height: 40px; }
+  .nav-toggle { width: 36px; height: 36px; }
 }
 
-@media (max-width: 420px) {
-  .header-inner { padding-inline: 16px; }
+@media (max-width: 480px) {
+  .header-inner { padding-inline: 14px; gap: 10px; }
 }
 
 
@@ -1238,4 +1238,9 @@ a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
 
 @media (max-width: 860px) {
   .audit { grid-template-columns: 1fr; }
+}
+/* Узкие экраны: гарантированный зазор между надписью и кнопкой меню */
+@media (max-width: 480px) {
+  .brand { gap: 8px; }
+  .brand-name { letter-spacing: 0; }
 }
