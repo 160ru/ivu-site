@@ -128,8 +128,195 @@
       body.appendChild(avitoRow);
     }
 
+    var questionsRow = el("p", "product__questions");
+    var questionsLink = document.createElement("button");
+    questionsLink.type = "button";
+    questionsLink.className = "link-question";
+    questionsLink.textContent = "Вопросы" + (item.comments ? " (" + item.comments + ")" : "");
+    questionsLink.addEventListener("click", function () {
+      openQuestions(item);
+    });
+    questionsRow.appendChild(questionsLink);
+    body.appendChild(questionsRow);
+
     article.appendChild(body);
     return article;
+  }
+
+  // ---------- окно вопросов ----------
+  var modal = null;
+
+  function buildModal() {
+    var wrap = el("div", "modal");
+    wrap.setAttribute("role", "dialog");
+    wrap.setAttribute("aria-modal", "true");
+
+    var panel = el("div", "modal__panel");
+
+    var close = document.createElement("button");
+    close.type = "button";
+    close.className = "modal__close";
+    close.setAttribute("aria-label", "Закрыть");
+    close.textContent = "×";
+    close.addEventListener("click", closeQuestions);
+    panel.appendChild(close);
+
+    var title = el("h2", "modal__title");
+    panel.appendChild(title);
+
+    var list = el("div", "modal__list");
+    panel.appendChild(list);
+
+    var form = document.createElement("form");
+    form.className = "modal__form";
+    form.noValidate = true;
+
+    var hp = document.createElement("input");
+    hp.type = "text";
+    hp.name = "hp";
+    hp.className = "modal__hp";
+    hp.tabIndex = -1;
+    hp.autocomplete = "off";
+    form.appendChild(hp);
+
+    var nameLabel = el("label", "modal__label");
+    nameLabel.appendChild(el("span", null, "Ваше имя"));
+    var nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.name = "name";
+    nameInput.required = true;
+    nameInput.maxLength = 60;
+    nameLabel.appendChild(nameInput);
+    form.appendChild(nameLabel);
+
+    var contactLabel = el("label", "modal__label");
+    contactLabel.appendChild(el("span", null, "Телефон или как связаться (необязательно)"));
+    var contactInput = document.createElement("input");
+    contactInput.type = "text";
+    contactInput.name = "contact";
+    contactInput.maxLength = 80;
+    contactLabel.appendChild(contactInput);
+    form.appendChild(contactLabel);
+
+    var textLabel = el("label", "modal__label");
+    textLabel.appendChild(el("span", null, "Вопрос"));
+    var textInput = document.createElement("textarea");
+    textInput.name = "text";
+    textInput.required = true;
+    textInput.maxLength = 1500;
+    textLabel.appendChild(textInput);
+    form.appendChild(textLabel);
+
+    var submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "btn btn--sm";
+    submit.textContent = "Отправить вопрос";
+    form.appendChild(submit);
+
+    var status = el("p", "modal__status");
+    form.appendChild(status);
+
+    panel.appendChild(form);
+    wrap.appendChild(panel);
+
+    wrap.addEventListener("click", function (event) {
+      if (event.target === wrap) closeQuestions();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeQuestions();
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      status.textContent = "";
+      status.className = "modal__status";
+
+      var payload = {
+        item: modalItemId,
+        name: nameInput.value.trim(),
+        text: textInput.value.trim(),
+        contact: contactInput.value.trim(),
+        hp: hp.value
+      };
+
+      if (payload.name.length < 2) {
+        status.textContent = "Напишите, как к вам обращаться";
+        status.classList.add("modal__status--err");
+        return;
+      }
+      if (payload.text.length < 10) {
+        status.textContent = "Вопрос слишком короткий — добавьте пару слов";
+        status.classList.add("modal__status--err");
+        return;
+      }
+
+      submit.disabled = true;
+      status.textContent = "Отправляем…";
+
+      fetch("comments-api.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+          if (data.error) throw new Error(data.error);
+          form.reset();
+          status.textContent = "Спасибо! Вопрос получили — ответим и опубликуем после проверки.";
+          status.classList.add("modal__status--ok");
+        })
+        .catch(function (error) {
+          status.textContent = error.message || "Не удалось отправить. Попробуйте позже.";
+          status.classList.add("modal__status--err");
+        })
+        .then(function () { submit.disabled = false; });
+    });
+
+    modal = { wrap: wrap, title: title, list: list };
+    document.body.appendChild(wrap);
+    return modal;
+  }
+
+  var modalItemId = 0;
+
+  function renderComments(items) {
+    modal.list.textContent = "";
+    if (!items.length) {
+      modal.list.appendChild(el("p", "modal__empty", "Пока вопросов нет. Задайте первый — ответим."));
+      return;
+    }
+    items.forEach(function (comment) {
+      var box = el("div", "modal__comment");
+      var head = el("p", "modal__comment-head");
+      head.appendChild(el("strong", null, comment.name));
+      head.appendChild(el("span", null, comment.date));
+      box.appendChild(head);
+      box.appendChild(el("p", "modal__comment-text", comment.text));
+      modal.list.appendChild(box);
+    });
+  }
+
+  function openQuestions(item) {
+    if (!modal) buildModal();
+    modalItemId = item.id;
+    modal.title.textContent = "Вопросы по товару";
+    modal.list.textContent = "";
+    modal.list.appendChild(el("p", "modal__empty", "Загружаем…"));
+    modal.wrap.classList.add("is-open");
+
+    fetch("comments-api.php?item=" + item.id)
+      .then(function (response) { return response.json(); })
+      .then(function (data) {
+        renderComments(data.items || []);
+      })
+      .catch(function () {
+        renderComments([]);
+      });
+  }
+
+  function closeQuestions() {
+    if (modal) modal.wrap.classList.remove("is-open");
   }
 
   function render(items, append) {

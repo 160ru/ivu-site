@@ -47,7 +47,8 @@ try {
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
-    $sql = 'SELECT id, title, price, condition, shown_date, description, avito, sold
+    $sql = 'SELECT id, title, price, condition, shown_date, description, avito, sold,
+            (SELECT COUNT(*) FROM comments c WHERE c.item_id = items.id AND c.approved = 1) AS comments_count
             FROM items WHERE ' . $where . '
             ORDER BY sold ASC, created DESC
             LIMIT :lim OFFSET :off';
@@ -75,6 +76,7 @@ try {
             'avito' => $row['avito'],
             'sold' => (bool) $row['sold'],
             'photos' => $photos,
+            'comments' => (int) $row['comments_count'],
         ];
     }
 

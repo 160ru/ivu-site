@@ -161,7 +161,7 @@ $authorized = !empty($_SESSION['auth']);
 
 // ---------- действия только для авторизованных ----------
 if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete'], true)) {
+    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve'], true)) {
         checkCsrf();
     }
 
@@ -265,6 +265,32 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+    if ($action === 'comment-approve') {
+        $commentId = (int) ($_POST['comment_id'] ?? 0);
+        if ($commentId > 0) {
+            db()->prepare('UPDATE comments SET approved = 1 - approved WHERE id = :id')
+                ->execute([':id' => $commentId]);
+            $message = 'Вопрос опубликован или снят с публикации';
+        }
+    }
+
+    if ($action === 'comment-delete') {
+        $commentId = (int) ($_POST['comment_id'] ?? 0);
+        if ($commentId > 0) {
+            db()->prepare('DELETE FROM comments WHERE id = :id')->execute([':id' => $commentId]);
+            $message = 'Вопрос удалён';
+        }
+    }
+
+    if ($action === 'auto-approve') {
+        $value = isset($_POST['auto_approve']) ? '1' : '0';
+        db()->prepare('INSERT INTO settings (key, value) VALUES (:k, :v)
+            ON CONFLICT(key) DO UPDATE SET value = :v')->execute([':k' => 'auto_approve', ':v' => $value]);
+        $message = $value === '1'
+            ? 'Вопросы публикуются сразу, без проверки'
+            : 'Вопросы ждут проверки перед публикацией';
+    }
+
     if ($action === 'photo-delete') {
         $photoId = (int) ($_POST['photo_id'] ?? 0);
         if ($photoId > 0) {
@@ -322,6 +348,17 @@ if ($authorized) {
     $stmt->bindValue(':off', ($page - 1) * $perPage, PDO::PARAM_INT);
     $stmt->execute();
     $list = $stmt->fetchAll();
+
+    $comments = db()->query('SELECT c.*, i.title AS item_title, i.category AS item_category
+        FROM comments c LEFT JOIN items i ON i.id = c.item_id
+        ORDER BY c.approved ASC, c.created DESC LIMIT 100')->fetchAll();
+    $pendingCount = 0;
+    foreach ($comments as $comment) {
+        if ((int) $comment['approved'] === 0) {
+            $pendingCount++;
+        }
+    }
+    $autoApprove = db()->query("SELECT value FROM settings WHERE key = 'auto_approve'")->fetchColumn() === '1';
 }
 
 $pages = max(1, (int) ceil($total / $perPage));
@@ -483,6 +520,61 @@ $pages = max(1, (int) ceil($total / $perPage));
       <p style="grid-column:1/-1;margin:0"><button class="btn btn--sm" type="submit">Сменить пароль</button></p>
     </form>
   </fieldset>
+  <fieldset>
+    <legend>Вопросы<?= $pendingCount > 0 ? ' — ждут проверки: ' . (int) $pendingCount : '' ?></legend>
+
+    <form method="post" action="/admin/" class="inline" style="margin-bottom:14px">
+      <input type="hidden" name="action" value="auto-approve">
+      <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+      <label class="inline" style="margin:0">
+        <input type="checkbox" name="auto_approve" value="1"<?= $autoApprove ? ' checked' : '' ?>>
+        <span style="margin:0">Публиковать без проверки</span>
+      </label>
+      <button class="btn btn--sm btn--ghost" type="submit">Применить</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr><th>Вопрос</th><th>Товар</th><th>Статус</th><th></th></tr>
+      </thead>
+      <tbody>
+      <?php foreach ($comments as $comment): ?>
+        <tr>
+          <td>
+            <strong><?= e($comment['name']) ?></strong>
+            <div class="small"><?= e($comment['text']) ?></div>
+            <?php if ((string) $comment['contact'] !== ''): ?>
+              <div class="small">Связь: <?= e($comment['contact']) ?></div>
+            <?php endif; ?>
+            <div class="small"><?= e(date('d.m.Y H:i', strtotime($comment['created']))) ?></div>
+          </td>
+          <td class="small"><?= e($comment['item_title'] ?? '— товар удалён —') ?></td>
+          <td class="small"><?= (int) $comment['approved'] === 1 ? 'опубликован' : 'ждёт проверки' ?></td>
+          <td>
+            <div class="inline">
+              <form method="post" action="/admin/">
+                <input type="hidden" name="action" value="comment-approve">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="comment_id" value="<?= (int) $comment['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit"><?= (int) $comment['approved'] === 1 ? 'Снять' : 'Опубликовать' ?></button>
+              </form>
+              <form method="post" action="/admin/" onsubmit="return confirm('Удалить вопрос?')">
+                <input type="hidden" name="action" value="comment-delete">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="comment_id" value="<?= (int) $comment['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit">Удалить</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      <?php if (!$comments): ?>
+        <tr><td colspan="4" class="small">Вопросов пока нет.</td></tr>
+      <?php endif; ?>
+      </tbody>
+    </table>
+  </fieldset>
+
   <fieldset>
     <legend>Товары: <?= (int) $total ?></legend>
     <form method="get" action="/admin/" class="inline" style="margin-bottom:12px">
