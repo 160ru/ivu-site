@@ -1134,3 +1134,51 @@ p:last-child { margin-bottom: 0; }
   .header-inner { padding-inline: 16px; }
 }
 
+
+/* ---------- Новости ---------- */
+
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 56px;
+  border-top: 1px solid var(--line);
+}
+
+.news-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.news-item__meta {
+  margin: 0 0 6px;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.news-item__title {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
+
+/* Своя новость — с красной меткой */
+.news-item--own .news-item__meta { color: var(--red); }
+
+.news-empty {
+  padding: 20px 0;
+  color: var(--ink-soft);
+  font-size: .9rem;
+}
+
+@media (max-width: 760px) {
+  .news-list { grid-template-columns: 1fr; }
+}

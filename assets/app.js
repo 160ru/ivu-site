@@ -114,3 +114,62 @@
     img.addEventListener("error", () => apply(false));
   });
 })();
+// Новостная лента: данные собирает scripts/update-news.mjs,
+// страница только показывает готовый data/news.json
+(function () {
+  "use strict";
+
+  const list = document.getElementById("news-list");
+  const section = document.getElementById("news");
+  if (!list || !section) return;
+
+  const MONTHS = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+
+  function formatDate(iso) {
+    const parts = String(iso).split("-");
+    if (parts.length !== 3) return "";
+    const day = Number(parts[2]);
+    const month = MONTHS[Number(parts[1]) - 1] || "";
+    return day + " " + month;
+  }
+
+  function render(items) {
+    list.textContent = "";
+    items.slice(0, 6).forEach(function (item) {
+      const li = document.createElement("li");
+      li.className = "news-item" + (item.manual ? " news-item--own" : "");
+
+      const meta = document.createElement("p");
+      meta.className = "news-item__meta";
+      meta.textContent = formatDate(item.date) + " · " + item.source;
+
+      const title = document.createElement(item.url ? "a" : "span");
+      title.className = "news-item__title";
+      title.textContent = item.title;
+      if (item.url) {
+        title.href = item.url;
+        title.target = "_blank";
+        title.rel = "noopener";
+      }
+
+      li.appendChild(meta);
+      li.appendChild(title);
+      list.appendChild(li);
+    });
+  }
+
+  fetch("data/news.json?v=" + Date.now())
+    .then(function (response) {
+      if (!response.ok) throw new Error("нет файла новостей");
+      return response.json();
+    })
+    .then(function (data) {
+      const items = (data && data.items) || [];
+      if (!items.length) throw new Error("пусто");
+      render(items);
+    })
+    .catch(function () {
+      // Нечего показать — убираем блок целиком, чтобы не висела заглушка
+      section.remove();
+    });
+})();

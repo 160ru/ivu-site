@@ -1,0 +1,38 @@
+name: Обновление новостей
+
+on:
+  # каждые 6 часов
+  schedule:
+    - cron: "0 */6 * * *"
+  # можно запустить вручную из вкладки Actions
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить репозиторий
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Собрать ленту из RSS и своих записей
+        run: node scripts/update-news.mjs
+
+      - name: Закоммитить изменения
+        run: |
+          git config user.name "news-bot"
+          git config user.email "actions@github.com"
+          git add data/news.json
+          if git diff --cached --quiet; then
+            echo "Новостей нет — коммит не нужен"
+          else
+            git commit -m "Новости: автоматическое обновление"
+            git push
+          fi
