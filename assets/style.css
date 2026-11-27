@@ -1040,3 +1040,13 @@ p:last-child { margin-bottom: 0; }
   color: var(--ink-soft);
   max-width: 44ch;
 }
+/* Иконки услуг вместо номеров */
+.service__icon {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 16px;
+  color: var(--blue);
+  stroke: currentColor;
+  fill: none;
+}
