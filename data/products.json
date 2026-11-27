@@ -1,5 +1,15 @@
 {
-  "updated": "2026-11-28",
+  "updated": "2026-11-27",
   "new": [],
-  "used": []
+  "used": [
+    {
+      "title": "шлейф imac 21 2012-2015",
+      "price": 999,
+      "condition": "",
+      "date": "2026",
+      "desc": "новый",
+      "image": "шлейф-imac-21-2012-2015-383847.jpg",
+      "sold": false
+    }
+  ]
 }
