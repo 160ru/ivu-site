@@ -9,3 +9,5 @@ node_modules/
 # Собирается скриптом: папка для выкладки и архив
 dist/
 *.zip
+
+screenshots/_*/
