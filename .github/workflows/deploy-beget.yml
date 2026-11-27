@@ -1,0 +1,54 @@
+name: Выкладка на Beget
+
+# Запускается при каждом изменении ветки main — включая автоматические
+# коммиты новостей. То есть: новости обновились сами → сайт на Бегете
+# обновился сам.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить репозиторий
+        uses: actions/checkout@v4
+
+      - name: Подготовить ключ
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.BEGET_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "${{ secrets.BEGET_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Скопировать сайт на хостинг
+        run: |
+          rsync -rlgoDzvc --delete \
+            -e "ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes" \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='screenshots' \
+            --exclude='scripts' \
+            --exclude='README.md' \
+            --exclude='DEPLOY-BEGET.md' \
+            --exclude='deploy.cmd' \
+            --exclude='deploy.ps1' \
+            --exclude='server.mjs' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='*.zip' \
+            --exclude='data/news-manual.json' \
+            ./ "${{ secrets.BEGET_USER }}@${{ secrets.BEGET_HOST }}:${{ secrets.BEGET_PATH }}/"
+
+      - name: Проверить, что сайт отвечает
+        run: |
+          sleep 3
+          code=$(curl -s -o /dev/null -w "%{http_code}" -L "https://ivu.ru/" || echo 000)
+          echo "ivu.ru отвечает: $code"
+          if [ "$code" != "200" ]; then
+            echo "::warning::Сайт вернул $code — проверьте вручную"
+          fi

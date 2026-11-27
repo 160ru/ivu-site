@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
   Выкладка статики сайта на виртуальный хостинг Beget по SSH.
 
@@ -39,10 +39,12 @@ $files = @(
   "404.html",
   "privacy.html",
   "requisites.html",
+  "wa.html",
   "robots.txt",
   "sitemap.xml",
   ".htaccess",
-  "assets"
+  "assets",
+  "data"
 )
 
 Push-Location $root
