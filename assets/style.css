@@ -1104,7 +1104,6 @@ p:last-child { margin-bottom: 0; }
 
 /* Бренд: знак и надпись масштабируются вместе и остаются одной высоты */
 @media (max-width: 1200px) {
-  :root { --brand-size: 38px; }
   .nav-toggle { display: inline-flex; }
 
   .nav {
@@ -1126,13 +1125,22 @@ p:last-child { margin-bottom: 0; }
 }
 
 @media (max-width: 700px) {
-  :root { --brand-size: 30px; }
+  :root { --brand-size: 40px; }
   .brand { gap: 10px; }
   .header-inner { gap: 12px; }
   .nav-toggle { width: 40px; height: 40px; }
 }
 
+@media (max-width: 540px) {
+  :root { --brand-size: 34px; }
+}
+
 @media (max-width: 420px) {
-  :root { --brand-size: 26px; }
+  :root { --brand-size: 28px; }
   .header-inner { padding-inline: 16px; }
 }
+
+@media (max-width: 370px) {
+  :root { --brand-size: 26px; }
+}
+
