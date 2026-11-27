@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Открываем WhatsApp… — Интер-Техника-Плюс</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f4f6fa;
+      color: #0d1b2a;
+      font: 16px/1.5 "Segoe UI", system-ui, sans-serif;
+      text-align: center;
+      padding: 24px;
+    }
+    a { color: #3060a0; }
+  </style>
+</head>
+<body>
+  <div>
+    <p>Открываем WhatsApp…</p>
+    <p><a id="go" href="#">Нажмите, если не открылось автоматически</a></p>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+      // Номер хранится в кодированном виде: в исходнике страницы его нет
+      var digits = atob("NzkwMjMxNjIyMjg=");
+      var url = "https://wa.me/" + digits;
+
+      var link = document.getElementById("go");
+      link.href = url;
+
+      // Переходим сразу; если браузер заблокирует — останется ссылка
+      window.location.replace(url);
+    })();
+  </script>
+</body>
+</html>
