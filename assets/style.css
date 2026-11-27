@@ -24,7 +24,7 @@
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 
   /* Сетка */
-  --wrap: 1160px;
+  --wrap: clamp(1160px, 88vw, 1440px);
   --gutter: clamp(20px, 5vw, 48px);
   --radius: 8px;
   --shadow: 0 18px 40px -24px rgba(13, 27, 42, .35);
@@ -1244,3 +1244,8 @@ a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
   .brand { gap: 8px; }
   .brand-name { letter-spacing: 0; }
 }
+/* Широкий контейнер: абзацы не растягиваем на всю ширину, иначе строка
+   становится нечитаемой (норма — 60–75 символов) */
+.about-text p,
+.audit__lead,
+.section-lead { max-width: 70ch; }
