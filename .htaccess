@@ -54,6 +54,10 @@ ErrorDocument 404 /404.html
 
 # Базовые защитные заголовки
 <IfModule mod_headers.c>
+  # HSTS: браузер год не будет обращаться к сайту по http, даже если попросить.
+  # Включён вместе с поддоменами — других поддоменов, кроме www, у домена нет.
+  # Чтобы отключить, замените max-age на 0 и дождитесь истечения срока у посетителей.
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
   Header set X-Frame-Options "SAMEORIGIN"
