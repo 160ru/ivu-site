@@ -165,7 +165,7 @@ p:last-child { margin-bottom: 0; }
 
 .brand-name {
   font-family: var(--font-display);
-  font-size: 2.75rem;
+  font-size: clamp(1rem, 3.05vw, 2.75rem);
   font-weight: 700;
   font-style: italic;
   text-transform: uppercase;
@@ -173,10 +173,6 @@ p:last-child { margin-bottom: 0; }
   line-height: 1;
   white-space: nowrap;
   color: var(--red);
-}
-
-@media (max-width: 1150px) {
-  .brand-name { display: none; }
 }
 
 .brand-plus { color: var(--red); }
@@ -1061,4 +1057,31 @@ p:last-child { margin-bottom: 0; }
   height: auto;
   background: var(--blue-soft);
   border-bottom: 1px solid var(--line);
+}
+/* Шапка: на средней ширине меню уходит в «бургер», чтобы поместилась надпись */
+@media (max-width: 1020px) {
+  .nav-toggle { display: inline-flex; }
+
+  .nav {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px var(--gutter) 20px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    display: none;
+  }
+  .nav.is-open { display: flex; }
+  .nav > a { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .nav > a:not(.btn)::after { display: none; }
+  .nav .phone-group { margin-top: 16px; }
+  .nav .btn { margin-top: 16px; width: 100%; }
+}
+
+@media (max-width: 700px) {
+  .brand-logo { height: 34px; }
+  .header-inner { gap: 12px; }
+  .brand { gap: 10px; }
 }
