@@ -92,7 +92,7 @@ p:last-child { margin-bottom: 0; }
   background: var(--blue);
   color: #fff;
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: .85rem;
   border-radius: var(--radius);
 }
 
@@ -127,8 +127,6 @@ p:last-child { margin-bottom: 0; }
 
 .btn--sm { padding: .75em 1.1em; font-size: .85rem; }
 
-.btn--red { background: var(--red); border-color: var(--red); }
-.btn--red:hover { background: var(--red-dark); border-color: var(--red-dark); }
 
 /* ---------- Шапка ---------- */
 
@@ -257,8 +255,8 @@ p:last-child { margin-bottom: 0; }
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: .76rem;
-  font-weight: 700;
+  font-size: .75rem;
+  font-weight: 600;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--red);
@@ -307,7 +305,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 .hero-card__label {
-  font-size: .74rem;
+  font-size: .75rem;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -316,13 +314,13 @@ p:last-child { margin-bottom: 0; }
 
 .hero-card__address {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   line-height: 1.35;
   margin: 0 0 4px;
 }
 
 .hero-card__note {
-  font-size: .86rem;
+  font-size: .85rem;
   color: var(--ink-soft);
   margin: 0 0 20px;
 }
@@ -371,7 +369,7 @@ p:last-child { margin-bottom: 0; }
 }
 .fact dd {
   margin: 8px 0 0;
-  font-size: .82rem;
+  font-size: .85rem;
   letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -399,7 +397,6 @@ p:last-child { margin-bottom: 0; }
   gap: clamp(14px, 2vw, 22px);
 }
 
-.cards--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 .card {
   position: relative;
@@ -419,15 +416,6 @@ p:last-child { margin-bottom: 0; }
   box-shadow: var(--shadow);
 }
 
-.card-icon {
-  font-family: var(--font-display);
-  font-size: 2.4rem;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--blue-soft);
-  -webkit-text-stroke: 1px var(--blue);
-  margin-bottom: 14px;
-}
 
 .card h3 {
   font-size: clamp(1.15rem, 1.8vw, 1.35rem);
@@ -436,23 +424,6 @@ p:last-child { margin-bottom: 0; }
 
 .card p { color: var(--ink-soft); font-size: .95rem; margin-bottom: 0; }
 
-.card-list {
-  margin: auto 0 0;
-  padding: 18px 0 0;
-  list-style: none;
-  border-top: 1px solid var(--line);
-  font-size: .9rem;
-  color: var(--ink-soft);
-}
-.card-list li { padding-left: 1.2em; position: relative; }
-.card-list li + li { margin-top: 7px; }
-.card-list li::before {
-  content: "";
-  position: absolute;
-  left: 0; top: .55em;
-  width: 8px; height: 2px;
-  background: var(--blue);
-}
 
 /* ---------- Партнёры ---------- */
 
@@ -483,7 +454,7 @@ p:last-child { margin-bottom: 0; }
 .partners li span {
   display: block;
   font-family: var(--font-body);
-  font-size: .68rem;
+  font-size: .75rem;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -518,29 +489,8 @@ p:last-child { margin-bottom: 0; }
   border-radius: 50%;
 }
 
-.about-media { margin: 0; }
 
-.media-placeholder {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 4 / 5;
-  background:
-    repeating-linear-gradient(45deg, transparent 0 10px, rgba(48, 96, 160, .06) 10px 20px),
-    var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  color: var(--ink-soft);
-  font-size: .8rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  text-align: center;
-}
 
-.about-media figcaption {
-  margin-top: 12px;
-  font-size: .82rem;
-  color: var(--ink-soft);
-}
 
 .about-more { margin-top: 26px; }
 
@@ -612,17 +562,16 @@ p:last-child { margin-bottom: 0; }
 }
 
 .contact-list dt {
-  font-size: .74rem;
+  font-size: .75rem;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--ink-soft);
   margin-bottom: 5px;
 }
-.contact-list dd { margin: 0; font-size: 1.05rem; }
+.contact-list dd { margin: 0; font-size: 1.1rem; }
 .contact-list a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
 .contact-list a:hover { color: var(--blue); border-color: var(--blue); }
 
-.messengers { display: flex; flex-wrap: wrap; gap: 16px; }
 
 /* Карта Яндекса */
 .map-embed {
@@ -641,7 +590,7 @@ p:last-child { margin-bottom: 0; }
   border: 0;
 }
 
-.map-link { display: inline-block; margin-top: 14px; font-size: .9rem; }
+.map-link { display: inline-block; margin-top: 14px; font-size: .95rem; }
 
 /* ---------- Телефон: набор и копирование ---------- */
 
@@ -720,7 +669,7 @@ p:last-child { margin-bottom: 0; }
   margin-bottom: .6em;
 }
 .prose h2 {
-  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  font-size: clamp(1.15rem, 1.8vw, 1.35rem);
   margin: 1.8em 0 .6em;
 }
 .prose ul { padding-left: 1.2em; color: var(--ink-soft); }
@@ -731,7 +680,7 @@ p:last-child { margin-bottom: 0; }
   padding: 14px 18px;
   background: var(--paper);
   border-left: 3px solid var(--red);
-  font-size: .88rem;
+  font-size: .85rem;
   color: var(--ink-soft);
 }
 
@@ -754,7 +703,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 .req-row dt {
-  font-size: .76rem;
+  font-size: .75rem;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -773,7 +722,7 @@ p:last-child { margin-bottom: 0; }
 
 .copy {
   font: inherit;
-  font-size: .68rem;
+  font-size: .75rem;
   letter-spacing: .08em;
   text-transform: uppercase;
   padding: 5px 9px;
@@ -810,8 +759,6 @@ p:last-child { margin-bottom: 0; }
   .map-embed { height: auto; aspect-ratio: 4 / 3; }
   .about,
   .contacts { grid-template-columns: 1fr; }
-  .about-media { order: -1; max-width: 420px; }
-  .media-placeholder { aspect-ratio: 16 / 10; }
 }
 
 @media (max-width: 860px) {
@@ -857,7 +804,6 @@ p:last-child { margin-bottom: 0; }
 }
 
 @media (max-width: 620px) {
-  .cards--4 { grid-template-columns: 1fr; }
   .partners { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .req-row { grid-template-columns: 1fr; gap: 4px; }
   .hero-card__phone { font-size: 1.35rem; }
@@ -913,7 +859,7 @@ p:last-child { margin-bottom: 0; }
 
 .partner .partner__name {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   letter-spacing: 0;
   text-transform: none;
   color: var(--ink);
@@ -921,8 +867,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 .partner.has-logo .partner__name { display: none; }
-.partner.no-logo img { display: none; }
-
+.partner
 /* Фото офиса убрано — текст слева, преимущества в карточке справа */
 .about {
   display: grid;
@@ -961,7 +906,7 @@ p:last-child { margin-bottom: 0; }
 .hero-card__note { margin-bottom: 6px; }
 .hero-card__hours {
   margin: 0 0 20px;
-  font-size: .92rem;
+  font-size: .95rem;
   color: var(--ink-soft);
 }
 .hero-card__hours span {
@@ -992,18 +937,7 @@ p:last-child { margin-bottom: 0; }
 /* object-fit: contain — нельзя обрезать копирайт и логотип Яндекса */
 .map-embed.is-static { aspect-ratio: 650 / 450; }
 
-.map-image-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
 
-.map-image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 /* ---------- Карта ---------- */
 
 .map-embed {
@@ -1027,7 +961,7 @@ p:last-child { margin-bottom: 0; }
   place-items: center;
   padding: 20px;
   text-align: center;
-  font-size: .9rem;
+  font-size: .95rem;
   color: var(--ink-soft);
 }
 /* Пояснение под кнопками первого экрана */
@@ -1038,15 +972,6 @@ p:last-child { margin-bottom: 0; }
   max-width: 44ch;
 }
 /* Иконки услуг вместо номеров */
-.service__icon {
-  display: block;
-  width: 30px;
-  height: 30px;
-  margin-bottom: 16px;
-  color: var(--blue);
-  stroke: currentColor;
-  fill: none;
-}
 /* Прямоугольная иллюстрация услуги */
 .card-cover {
   display: block;
@@ -1085,9 +1010,6 @@ p:last-child { margin-bottom: 0; }
   .brand { gap: 10px; }
 }
 /* Шапка на узких экранах: текст и знак выравниваются по высоте */
-@media (max-width: 1020px) {
-  
-}
 
 @media (max-width: 700px) {
   
@@ -1154,7 +1076,7 @@ p:last-child { margin-bottom: 0; }
 
 .news-item__meta {
   margin: 0 0 6px;
-  font-size: .72rem;
+  font-size: .75rem;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -1176,7 +1098,7 @@ a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
 .news-empty {
   padding: 20px 0;
   color: var(--ink-soft);
-  font-size: .9rem;
+  font-size: .95rem;
 }
 
 @media (max-width: 760px) {
