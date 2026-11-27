@@ -114,6 +114,7 @@
     <p class="actions" style="display:flex;gap:12px;flex-wrap:wrap">
       <button class="btn" type="button" id="publish">Опубликовать</button>
       <button class="btn btn--ghost" type="button" id="clear">Очистить поля</button>
+      <button class="btn btn--ghost" type="button" id="forget">Забыть токен</button>
     </p>
     <p class="status" id="status" role="status"></p>
   </main>
@@ -128,16 +129,41 @@
     var DATA_PATH = "data/products.json";
     var IMG_DIR = "assets/products";
 
+    function say(text, ok) {
+      statusBox.textContent = text;
+      statusBox.className = "status " + (ok ? "status--ok" : "status--err");
+    }
     var $ = function (id) { return document.getElementById(id); };
     var tokenInput = $("token");
     var statusBox = $("status");
     var preview = $("preview");
     var fileInput = $("photo");
 
-    tokenInput.value = localStorage.getItem("ivu_gh_token") || "";
-    tokenInput.addEventListener("change", function () {
-      localStorage.setItem("ivu_gh_token", tokenInput.value.trim());
-    });
+    function rememberToken() {
+      var value = tokenInput.value.trim();
+      try {
+        if (value) localStorage.setItem("ivu_gh_token", value);
+        else localStorage.removeItem("ivu_gh_token");
+        if (value) say("Токен сохранён в этом браузере", true);
+      } catch (error) {
+        say("Браузер не даёт сохранить токен (режим инкогнито?). Придётся вставлять каждый раз.", false);
+      }
+    }
+
+    try {
+      tokenInput.value = localStorage.getItem("ivu_gh_token") || "";
+      if (tokenInput.value) {
+        statusBox.textContent = "Токен уже сохранён — заполняйте товар, вставлять не нужно.";
+        statusBox.className = "status status--ok";
+      }
+    } catch (error) {
+      statusBox.textContent = "Браузер не даёт доступ к хранилищу — токен придётся вставлять каждый раз.";
+      statusBox.className = "status status--err";
+    }
+
+    tokenInput.addEventListener("input", rememberToken);
+    tokenInput.addEventListener("change", rememberToken);
+    tokenInput.addEventListener("blur", rememberToken);
 
     fileInput.addEventListener("change", function () {
       var file = fileInput.files && fileInput.files[0];
@@ -146,10 +172,6 @@
       preview.hidden = false;
     });
 
-    function say(text, ok) {
-      statusBox.textContent = text;
-      statusBox.className = "status " + (ok ? "status--ok" : "status--err");
-    }
 
     function b64toUtf8(b64) {
       var bin = atob(b64.replace(/\n/g, ""));
@@ -228,6 +250,7 @@
     function publish() {
       var token = tokenInput.value.trim();
       if (!token) { say("Сначала вставьте токен GitHub", false); return; }
+      rememberToken();
       var title = $("title").value.trim();
       if (!title) { say("Название обязательно", false); return; }
 
@@ -299,6 +322,12 @@
     }
 
     $("publish").addEventListener("click", publish);
+    $("forget").addEventListener("click", function () {
+      try { localStorage.removeItem("ivu_gh_token"); } catch (error) { /* ничего */ }
+      tokenInput.value = "";
+      say("Токен удалён из браузера", true);
+    });
+
     $("clear").addEventListener("click", function () {
       ["title", "price", "condition", "date", "desc", "avito"].forEach(function (id) { $(id).value = ""; });
       fileInput.value = "";
