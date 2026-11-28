@@ -34,7 +34,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Блог — Интер-Техника-Плюс</title>
+    <title>Блог — Интер-техника-Плюс</title>
     <link>https://ivu.ru/blog/</link>
     <description>Заметки о технике, 1С и безопасности. Иваново.</description>
     <language>ru</language>

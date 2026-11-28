@@ -127,7 +127,7 @@ function ivuSmtpSend(string $host, int $port, string $user, string $pass, string
         return false;
     }
 
-    $headers = 'From: Интер-Техника-Плюс <' . $user . ">\r\n"
+    $headers = 'From: Интер-техника-Плюс <' . $user . ">\r\n"
         . 'To: <' . $to . ">\r\n"
         . 'Subject: ' . $subject . "\r\n"
         . "MIME-Version: 1.0\r\n"

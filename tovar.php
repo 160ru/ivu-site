@@ -75,12 +75,12 @@ if ($id > 0 && is_file($dbFile)) {
 
 if ($item === null) {
     http_response_code(404);
-    $pageTitle = 'Товар не найден — Интер-Техника-Плюс';
+    $pageTitle = 'Товар не найден — Интер-техника-Плюс';
     $pageDescription = 'Такой страницы нет.';
     $notFound = true;
 } else {
     $notFound = false;
-    $pageTitle = $item['title'] . ' — ' . money((int) $item['price']) . ' | Интер-Техника-Плюс';
+    $pageTitle = $item['title'] . ' — ' . money((int) $item['price']) . ' | Интер-техника-Плюс';
     $plainDesc = trim(preg_replace('/\s+/u', ' ', (string) $item['description']) ?? '');
     $pageDescription = $plainDesc !== ''
         ? mb_substr($plainDesc, 0, 160)
@@ -108,7 +108,7 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="stylesheet" href="/assets/style.css?v=20261187">
+<link rel="stylesheet" href="/assets/style.css?v=20261188">
 <?php if (!$notFound): ?>
 <script type="application/ld+json">
 {
@@ -122,7 +122,7 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
     "price": <?= (int) $item['price'] ?>,
     "priceCurrency": "RUB",
     "availability": <?= (int) $item['sold'] === 1 ? '"https://schema.org/SoldOut"' : '"https://schema.org/InStock"' ?>,
-    "seller": { "@type": "Organization", "name": "ООО «Интер-Техника-Плюс»" }
+    "seller": { "@type": "Organization", "name": "ООО «Интер-техника-Плюс»" }
   },<?php endif; ?>
 }
 </script>
@@ -131,8 +131,8 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
 <body>
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="/index.html" aria-label="Интер-Техника-Плюс — на главную">
-      <img class="brand-logo" src="/assets/logo.png?v=20261187" alt="Интер-Техника-Плюс" width="112" height="44">
+    <a class="brand" href="/index.html" aria-label="Интер-техника-Плюс — на главную">
+      <img class="brand-logo" src="/assets/logo.png?v=20261188" alt="Интер-техника-Плюс" width="112" height="44">
       <span class="brand-name">Интер-Техника<span class="brand-plus">+</span></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
@@ -330,7 +330,7 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
   <div class="container footer-grid">
     <div>
       <p class="footer-h">Интер-Техника+</p>
-      <p>ООО «Интер-Техника-Плюс»<br>ИНН 3702008221</p>
+      <p>ООО «Интер-техника-Плюс»<br>ИНН 3702008221</p>
       <p>© 1999–<span id="year">2026</span>. Компьютеры, сервис и 1С<br>в Иванове с 1999 года.</p>
     </div>
 
@@ -354,9 +354,9 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
     </div>
   </div>
 </footer>
-<script src="/assets/app.js?v=20261187" defer></script>
-<script src="/assets/hours.js?v=20261187" defer></script>
-<script src="/assets/order.js?v=20261187" defer></script>
+<script src="/assets/app.js?v=20261188" defer></script>
+<script src="/assets/hours.js?v=20261188" defer></script>
+<script src="/assets/order.js?v=20261188" defer></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   var button = document.getElementById("order-button");

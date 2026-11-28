@@ -143,16 +143,16 @@ $notFound = ($slug !== '' && $post === null);
 
 if ($notFound) {
     http_response_code(404);
-    $pageTitle = 'Запись не найдена — блог Интер-Техника-Плюс';
+    $pageTitle = 'Запись не найдена — блог Интер-техника-Плюс';
     $pageDescription = 'Такой страницы нет.';
 } elseif ($post !== null) {
     $plain = trim(preg_replace('/\s+/u', ' ', (string) $post['body']) ?? '');
-    $pageTitle = $post['title'] . ' — блог Интер-Техника-Плюс';
+    $pageTitle = $post['title'] . ' — блог Интер-техника-Плюс';
     $pageDescription = (string) $post['excerpt'] !== ''
         ? mb_substr((string) $post['excerpt'], 0, 160)
         : mb_substr($plain, 0, 160);
 } else {
-    $pageTitle = 'Блог — Интер-Техника-Плюс, Иваново';
+    $pageTitle = 'Блог — Интер-техника-Плюс, Иваново';
     $pageDescription = 'Заметки о технике, 1С и безопасности: что меняется, что стоит учесть и как не переплатить.';
 }
 
@@ -175,17 +175,17 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <meta name="theme-color" content="#3060a0">
 <meta property="og:type" content="article">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:site_name" content="Интер-Техника-Плюс">
+<meta property="og:site_name" content="Интер-техника-Плюс">
 <meta property="og:title" content="<?= e($pageTitle) ?>">
 <meta property="og:description" content="<?= e($pageDescription) ?>">
 <meta property="og:url" content="<?= e($canonical) ?>">
 <meta property="og:image" content="<?= e($ogImage) ?>">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="alternate" type="application/rss+xml" title="Блог Интер-Техника-Плюс" href="https://ivu.ru/blog/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="Блог Интер-техника-Плюс" href="https://ivu.ru/blog/rss.xml">
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="stylesheet" href="/assets/style.css?v=20261187">
+<link rel="stylesheet" href="/assets/style.css?v=20261188">
 <?php if ($post !== null): ?>
 <script type="application/ld+json">
 {
@@ -194,8 +194,8 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
   "headline": <?= json_encode($post['title'], JSON_UNESCAPED_UNICODE) ?>,
   "datePublished": <?= json_encode(date('c', strtotime((string) $post['created'])), JSON_UNESCAPED_UNICODE) ?>,
   "dateModified": <?= json_encode(date('c', strtotime((string) ($post['updated'] !== '' ? $post['updated'] : $post['created']))), JSON_UNESCAPED_UNICODE) ?>,
-  "author": { "@type": "Organization", "name": "ООО «Интер-Техника-Плюс»" },
-  "publisher": { "@type": "Organization", "name": "ООО «Интер-Техника-Плюс»", "logo": { "@type": "ImageObject", "url": "https://ivu.ru/assets/favicon-512.png" } },
+  "author": { "@type": "Organization", "name": "ООО «Интер-техника-Плюс»" },
+  "publisher": { "@type": "Organization", "name": "ООО «Интер-техника-Плюс»", "logo": { "@type": "ImageObject", "url": "https://ivu.ru/assets/favicon-512.png" } },
   "mainEntityOfPage": <?= json_encode($canonical, JSON_UNESCAPED_UNICODE) ?>
   <?php if ((string) $post['cover'] !== ''): ?>, "image": <?= json_encode($ogImage, JSON_UNESCAPED_UNICODE) ?><?php endif; ?>
 }
@@ -216,8 +216,8 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <body>
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="/index.html" aria-label="Интер-Техника-Плюс — на главную">
-      <img class="brand-logo" src="/assets/logo.png?v=20261187" alt="Интер-Техника-Плюс" width="112" height="44">
+    <a class="brand" href="/index.html" aria-label="Интер-техника-Плюс — на главную">
+      <img class="brand-logo" src="/assets/logo.png?v=20261188" alt="Интер-техника-Плюс" width="112" height="44">
       <span class="brand-name">Интер-Техника<span class="brand-plus">+</span></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
@@ -386,7 +386,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
   <div class="container footer-grid">
     <div>
       <p class="footer-h">Интер-Техника+</p>
-      <p>ООО «Интер-Техника-Плюс»<br>ИНН 3702008221</p>
+      <p>ООО «Интер-техника-Плюс»<br>ИНН 3702008221</p>
       <p>© 1999–<span id="year">2026</span>. Компьютеры, сервис и 1С<br>в Иванове с 1999 года.</p>
     </div>
 
@@ -410,7 +410,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     </div>
   </div>
 </footer>
-<script src="/assets/app.js?v=20261187" defer></script>
-<script src="/assets/hours.js?v=20261187" defer></script>
+<script src="/assets/app.js?v=20261188" defer></script>
+<script src="/assets/hours.js?v=20261188" defer></script>
 </body>
 </html>
