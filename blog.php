@@ -185,7 +185,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="stylesheet" href="/assets/style.css?v=20261167">
+<link rel="stylesheet" href="/assets/style.css?v=20261172">
 <?php if ($post !== null): ?>
 <script type="application/ld+json">
 {
@@ -217,7 +217,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/index.html" aria-label="Интер-Техника-Плюс — на главную">
-      <img class="brand-logo" src="/assets/logo.png?v=20261167" alt="Интер-Техника-Плюс" width="112" height="44">
+      <img class="brand-logo" src="/assets/logo.png?v=20261172" alt="Интер-Техника-Плюс" width="112" height="44">
       <span class="brand-name">Интер-Техника<span class="brand-plus">+</span></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
@@ -359,8 +359,8 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     <p class="catalog-empty">Пока пусто. Первая запись появится здесь.</p>
   <?php else: ?>
     <div class="posts">
-      <?php foreach ($posts as $entry): ?>
-        <article class="post-card">
+      <?php foreach ($posts as $index => $entry): ?>
+        <article class="post-card<?= $index === 0 ? ' post-card--wide' : '' ?>">
           <?php if ((string) $entry['cover'] !== ''): ?>
             <a class="post-card__media" href="/blog/<?= e($entry['slug']) ?>">
               <img src="<?= e($uploadUrl . $entry['cover']) ?>" alt="" loading="lazy" width="640" height="360">
@@ -410,7 +410,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     </div>
   </div>
 </footer>
-<script src="/assets/app.js?v=20261167" defer></script>
-<script src="/assets/hours.js?v=20261167" defer></script>
+<script src="/assets/app.js?v=20261172" defer></script>
+<script src="/assets/hours.js?v=20261172" defer></script>
 </body>
 </html>
