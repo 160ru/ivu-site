@@ -104,12 +104,29 @@ async function main() {
     }
   }
 
-  const seen = new Set();
+  // одна и та же статья приходит из разных лент и с разным порядком utm-меток,
+  // поэтому сравниваем очищенные адреса и заголовки
+  const normalizeUrl = (value) => String(value || "")
+    .split("?")[0]
+    .replace(/^https?:\/\/(www\.)?/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+  const normalizeTitle = (value) => String(value || "")
+    .toLowerCase()
+    .replace(/[«»"'`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const seenUrl = new Set();
+  const seenTitle = new Set();
   const items = [...manual, ...collected]
     .filter((item) => {
-      const key = (item.url || item.title).toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
+      const urlKey = normalizeUrl(item.url);
+      const titleKey = normalizeTitle(item.title);
+      if (urlKey && seenUrl.has(urlKey)) return false;
+      if (titleKey && seenTitle.has(titleKey)) return false;
+      if (urlKey) seenUrl.add(urlKey);
+      if (titleKey) seenTitle.add(titleKey);
       return true;
     })
     .sort((a, b) => {
