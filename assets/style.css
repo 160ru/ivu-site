@@ -1997,3 +1997,9 @@ body > main { flex: 1 0 auto; }
 .order-form__status--ok { color: #1c6b3a; }
 .order-form__status--err { color: var(--red-text); }
 .order-modal__alt { margin: 14px 0 0; font-size: .85rem; }
+/* поля в окне заказа — на всю ширину, как у телефона */
+.order-form .hours-form__input {
+  width: 100%;
+  flex: none;
+  display: block;
+}

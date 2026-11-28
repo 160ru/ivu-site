@@ -916,6 +916,8 @@ $pages = max(1, (int) ceil($total / $perPage));
           <td>
             <strong><a href="tel:<?= e(preg_replace('/[^\d+]/', '', (string) $cb['phone']) ?? '') ?>"><?= e($cb['phone']) ?></a></strong>
             <?php if ((string) $cb['name'] !== ''): ?><div class="small"><?= e($cb['name']) ?></div><?php endif; ?>
+            <?php if ((string) ($cb['email'] ?? '') !== ''): ?><div class="small">Почта: <?= e($cb['email']) ?></div><?php endif; ?>
+            <?php if ((string) ($cb['note'] ?? '') !== ''): ?><div class="small">Что: <?= e($cb['note']) ?></div><?php endif; ?>
           </td>
           <td class="small"><?= e(date('d.m.Y H:i', strtotime((string) $cb['created']))) ?></td>
           <td class="small"><?= (int) $cb['processed'] === 1 ? 'обработана' : '<strong>ждёт</strong>' ?></td>

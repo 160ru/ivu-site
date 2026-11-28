@@ -78,6 +78,21 @@
     phoneLabel.appendChild(phoneInput);
     form.appendChild(phoneLabel);
 
+    var emailLabel = document.createElement("label");
+    emailLabel.className = "order-form__label";
+    var emailText = document.createElement("span");
+    emailText.textContent = "Почта для подтверждения (необязательно)";
+    emailLabel.appendChild(emailText);
+
+    var emailInput = document.createElement("input");
+    emailInput.type = "email";
+    emailInput.name = "email";
+    emailInput.className = "hours-form__input";
+    emailInput.placeholder = "you@example.ru";
+    emailInput.autocomplete = "email";
+    emailLabel.appendChild(emailInput);
+    form.appendChild(emailLabel);
+
     var hint = document.createElement("p");
     hint.className = "order-form__hint";
     hint.textContent = "Перезвоним, подтвердим наличие и срок. Работаем Пн–Пт с 11:00 до 18:00.";
@@ -115,6 +130,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone: phone,
+          email: emailInput.value.trim(),
           note: productName ? "Заказ: " + productName : "Заказ с сайта",
           hp: hp.value
         })
@@ -122,8 +138,11 @@
         .then(function (response) { return response.json(); })
         .then(function (result) {
           if (result.error) throw new Error(result.error);
+          var hadEmail = emailInput.value.trim() !== "";
           form.reset();
-          status.textContent = "Заявка принята. Перезвоним в рабочее время.";
+          status.textContent = hadEmail
+            ? "Заявка принята. Перезвоним в рабочее время, подтверждение отправили на почту."
+            : "Заявка принята. Перезвоним в рабочее время.";
           status.classList.add("order-form__status--ok");
           submit.disabled = true;
         })

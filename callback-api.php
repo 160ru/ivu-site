@@ -53,6 +53,10 @@ if (!empty($data['hp'])) {
 
 $phone = cleanText((string) ($data['phone'] ?? ''), 40);
 $note = cleanText((string) ($data['note'] ?? ''), 140);
+$email = mb_strtolower(cleanText((string) ($data['email'] ?? ''), 120));
+if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $email = '';
+}
 $name = cleanText((string) ($data['name'] ?? ''), 60);
 
 $digits = preg_replace('/\D+/', '', $phone) ?? '';
@@ -70,6 +74,7 @@ try {
         phone TEXT NOT NULL,
         name TEXT DEFAULT "",
         note TEXT DEFAULT "",
+        email TEXT DEFAULT "",
         created TEXT NOT NULL,
         processed INTEGER NOT NULL DEFAULT 0,
         ip_hash TEXT DEFAULT ""
@@ -87,6 +92,17 @@ try {
         $pdo->exec('ALTER TABLE callbacks ADD COLUMN note TEXT DEFAULT ""');
     }
 
+    // почта заказчика — появилась позже, добавляем на старых базах
+    $hasEmail = false;
+    foreach ($columns as $column) {
+        if ($column['name'] === 'email') {
+            $hasEmail = true;
+        }
+    }
+    if (!$hasEmail) {
+        $pdo->exec('ALTER TABLE callbacks ADD COLUMN email TEXT DEFAULT ""');
+    }
+
     $ipHash = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . 'ivu-callback');
 
     $rate = $pdo->prepare('SELECT COUNT(*) FROM callbacks WHERE ip_hash = :ip AND created > :since');
@@ -95,12 +111,13 @@ try {
         out(['error' => 'Слишком много заявок подряд. Попробуйте через час.'], 429);
     }
 
-    $stmt = $pdo->prepare('INSERT INTO callbacks (phone, name, note, created, ip_hash)
-        VALUES (:phone, :name, :note, :created, :ip)');
+    $stmt = $pdo->prepare('INSERT INTO callbacks (phone, name, note, email, created, ip_hash)
+        VALUES (:phone, :name, :note, :email, :created, :ip)');
     $stmt->execute([
         ':phone' => $phone,
         ':name' => $name,
         ':note' => $note,
+        ':email' => $email,
         ':created' => date('c'),
         ':ip' => $ipHash,
     ]);
@@ -118,5 +135,27 @@ $body = 'Номер: ' . $phone . "\n"
     . "Список заявок: https://ivu.ru/admin/\n";
 
 ivuMail($notifyTo, $subject, $body);
+
+// подтверждение заказчику — если оставил почту
+if ($email !== '') {
+    $confirmSubject = 'Заявка принята — Интер-Техника-Плюс';
+    $confirmBody = "Здравствуйте!
+
+"
+        . "Мы получили вашу заявку на сайте ivu.ru.
+
+"
+        . ($note !== '' ? 'Что: ' . $note . "\n" : '')
+        . 'Телефон: ' . $phone . "\n
+"
+        . "Перезвоним в рабочее время: Пн–Пт с 11:00 до 18:00.
+"
+        . "Если вопрос срочный — позвоните сами: +7 4932 353070.
+
+"
+        . "ООО «Интер-Техника-Плюс», Иваново, ул. Степанова, 24
+";
+    ivuMail($email, $confirmSubject, $confirmBody);
+}
 
 out(['ok' => true]);
