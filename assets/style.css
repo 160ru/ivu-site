@@ -2005,4 +2005,4 @@ body > main { flex: 1 0 auto; }
 }
 /* Фирменный знак 1С в блоке фактов */
 .fact__logo { display: flex; align-items: center; min-height: 42px; }
-.fact__logo img { width: auto; height: clamp(28px, 3vw, 38px); }
+.fact__logo img { width: 100px; height: 45px; }
