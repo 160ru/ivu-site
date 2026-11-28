@@ -52,6 +52,17 @@ function db(): PDO
             file TEXT NOT NULL,
             ord INTEGER NOT NULL DEFAULT 0
         )');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT NOT NULL UNIQUE,
+            title TEXT NOT NULL,
+            excerpt TEXT DEFAULT "",
+            body TEXT DEFAULT "",
+            cover TEXT DEFAULT "",
+            published INTEGER NOT NULL DEFAULT 0,
+            created TEXT NOT NULL,
+            updated TEXT DEFAULT ""
+        )');
     }
     return $pdo;
 }
@@ -214,7 +225,7 @@ $authorized = !empty($_SESSION['auth']);
 
 // ---------- действия только для авторизованных ----------
 if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve'], true)) {
+    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish'], true)) {
         checkCsrf();
     }
 
@@ -358,6 +369,87 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
             : 'Вопросы ждут проверки перед публикацией';
     }
 
+    if ($action === 'post-save') {
+        $postId = (int) ($_POST['post_id'] ?? 0);
+        $title = trim((string) ($_POST['post_title'] ?? ''));
+        $slug = trim((string) ($_POST['post_slug'] ?? ''));
+        if ($slug === '') {
+            $slug = translit($title);
+        }
+        $slug = preg_replace('/[^a-z0-9-]+/', '-', mb_strtolower($slug, 'UTF-8')) ?? '';
+        $slug = trim((string) $slug, '-');
+        if ($slug === '') {
+            $slug = 'zapis-' . time();
+        }
+
+        if ($title === '') {
+            $error = 'Заголовок записи обязателен';
+        } else {
+            $data = [
+                'title' => $title,
+                'slug' => $slug,
+                'excerpt' => trim((string) ($_POST['post_excerpt'] ?? '')),
+                'body' => trim((string) ($_POST['post_body'] ?? '')),
+                'published' => isset($_POST['post_published']) ? 1 : 0,
+                'updated' => date('c'),
+            ];
+
+            try {
+                if ($postId > 0) {
+                    $stmt = db()->prepare('UPDATE posts SET title=:title, slug=:slug, excerpt=:excerpt,
+                        body=:body, published=:published, updated=:updated WHERE id=:id');
+                    $stmt->execute($data + [':id' => $postId]);
+                    $savedId = $postId;
+                    $message = 'Запись обновлена';
+                } else {
+                    $data['created'] = date('c');
+                    $stmt = db()->prepare('INSERT INTO posts (title, slug, excerpt, body, published, updated, created)
+                        VALUES (:title, :slug, :excerpt, :body, :published, :updated, :created)');
+                    $stmt->execute($data);
+                    $savedId = (int) db()->lastInsertId();
+                    $message = 'Запись добавлена';
+                }
+
+                // обложка
+                if (!empty($_FILES['post_cover']['name'])) {
+                    $coverDir = dirname(__DIR__) . '/uploads/blog';
+                    if (!is_dir($coverDir)) {
+                        @mkdir($coverDir, 0755, true);
+                    }
+                    $cover = storePhoto($_FILES['post_cover'], 'cover-' . $slug);
+                    if ($cover !== null) {
+                        // storePhoto кладёт в папку товаров — переносим к блогу
+                        $from = rtrim($uploadDir, '/') . '/' . $cover;
+                        $to = rtrim($coverDir, '/') . '/' . $cover;
+                        if (@rename($from, $to)) {
+                            db()->prepare('UPDATE posts SET cover = :c WHERE id = :id')
+                                ->execute([':c' => $cover, ':id' => $savedId]);
+                        }
+                    }
+                }
+            } catch (Throwable $e) {
+                $error = 'Не удалось сохранить: ' . $e->getMessage();
+            }
+        }
+    }
+
+    if ($action === 'post-delete') {
+        $postId = (int) ($_POST['post_id'] ?? 0);
+        if ($postId > 0) {
+            db()->prepare('DELETE FROM posts WHERE id = :id')->execute([':id' => $postId]);
+            $message = 'Запись удалена';
+        }
+    }
+
+    if ($action === 'post-publish') {
+        $postId = (int) ($_POST['post_id'] ?? 0);
+        if ($postId > 0) {
+            db()->prepare('UPDATE posts SET published = 1 - published WHERE id = :id')
+                ->execute([':id' => $postId]);
+            $message = 'Публикация переключена';
+        }
+    }
+
     if ($action === 'photo-delete') {
         $photoId = (int) ($_POST['photo_id'] ?? 0);
         if ($photoId > 0) {
@@ -424,6 +516,14 @@ if ($authorized) {
         if ((int) $comment['approved'] === 0) {
             $pendingCount++;
         }
+    }
+    $posts = db()->query('SELECT * FROM posts ORDER BY created DESC')->fetchAll();
+    $editPost = null;
+    $editPostId = (int) ($_GET['post'] ?? 0);
+    if ($editPostId > 0) {
+        $stmt = db()->prepare('SELECT * FROM posts WHERE id = :id');
+        $stmt->execute([':id' => $editPostId]);
+        $editPost = $stmt->fetch() ?: null;
     }
     $autoApprove = db()->query("SELECT value FROM settings WHERE key = 'auto_approve'")->fetchColumn() === '1';
 }
@@ -608,6 +708,90 @@ $pages = max(1, (int) ceil($total / $perPage));
         <span class="small">— пока поля пустые, вопросы принимаются без входа</span>
       </p>
     </form>
+  </fieldset>
+  <fieldset>
+    <legend>Блог: <?= count($posts) ?> записей</legend>
+
+    <form method="post" action="/admin/" enctype="multipart/form-data" style="margin-bottom:18px">
+      <input type="hidden" name="action" value="post-save">
+      <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+      <input type="hidden" name="post_id" value="<?= $editPost ? (int) $editPost['id'] : 0 ?>">
+
+      <div class="row2">
+        <label>
+          <span>Заголовок</span>
+          <input type="text" name="post_title" required value="<?= e($editPost['title'] ?? '') ?>">
+        </label>
+        <label>
+          <span>Адрес (латиницей, можно пусто — сделается сам)</span>
+          <input type="text" name="post_slug" value="<?= e($editPost['slug'] ?? '') ?>" placeholder="kak-vybrat-server">
+        </label>
+      </div>
+
+      <label>
+        <span>Краткое описание (для списка и поиска)</span>
+        <input type="text" name="post_excerpt" maxlength="200" value="<?= e($editPost['excerpt'] ?? '') ?>">
+      </label>
+
+      <label>
+        <span>Текст записи</span>
+        <textarea name="post_body" style="min-height:220px" placeholder="Абзацы разделяйте пустой строкой.&#10;&#10;## Подзаголовок&#10;&#10;- пункт списка"><?= e($editPost['body'] ?? '') ?></textarea>
+      </label>
+
+      <label>
+        <span>Обложка (необязательно, 16:9)</span>
+        <input type="file" name="post_cover" accept="image/*">
+      </label>
+      <?php if ($editPost && (string) $editPost['cover'] !== ''): ?>
+        <p class="small">Текущая обложка: <?= e($editPost['cover']) ?></p>
+      <?php endif; ?>
+
+      <label class="inline" style="margin-bottom:8px">
+        <input type="checkbox" name="post_published" value="1"<?= $editPost && (int) $editPost['published'] === 1 ? ' checked' : '' ?>>
+        <span style="margin:0">Опубликовать на сайте и в RSS</span>
+      </label>
+
+      <p class="inline" style="margin:12px 0 0">
+        <button class="btn" type="submit"><?= $editPost ? 'Сохранить запись' : 'Добавить запись' ?></button>
+        <?php if ($editPost): ?><a class="btn btn--ghost" href="/admin/">Отмена</a><?php endif; ?>
+        <span class="small">RSS для Дзена: https://ivu.ru/blog/rss.xml</span>
+      </p>
+    </form>
+
+    <table>
+      <thead><tr><th>Запись</th><th>Статус</th><th></th></tr></thead>
+      <tbody>
+      <?php foreach ($posts as $entry): ?>
+        <tr>
+          <td>
+            <strong><?= e($entry['title']) ?></strong>
+            <div class="small">/blog/<?= e($entry['slug']) ?> · <?= e(date('d.m.Y', strtotime((string) $entry['created']))) ?></div>
+          </td>
+          <td class="small"><?= (int) $entry['published'] === 1 ? 'опубликована' : 'черновик' ?></td>
+          <td>
+            <div class="inline">
+              <a class="btn btn--sm btn--ghost" href="/admin/?post=<?= (int) $entry['id'] ?>">Изменить</a>
+              <form method="post" action="/admin/">
+                <input type="hidden" name="action" value="post-publish">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="post_id" value="<?= (int) $entry['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit"><?= (int) $entry['published'] === 1 ? 'В черновик' : 'Опубликовать' ?></button>
+              </form>
+              <form method="post" action="/admin/" onsubmit="return confirm('Удалить запись?')">
+                <input type="hidden" name="action" value="post-delete">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="post_id" value="<?= (int) $entry['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit">Удалить</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      <?php if (!$posts): ?>
+        <tr><td colspan="3" class="small">Записей пока нет.</td></tr>
+      <?php endif; ?>
+      </tbody>
+    </table>
   </fieldset>
   <fieldset>
     <legend>Вопросы<?= $pendingCount > 0 ? ' — ждут проверки: ' . (int) $pendingCount : '' ?></legend>

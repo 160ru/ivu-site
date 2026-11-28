@@ -38,6 +38,10 @@ ErrorDocument 404 /404.html
   # 4. страница товара: /tovar/123
   RewriteRule ^tovar/([0-9]+)/?$ tovar.php?id=$1 [L,QSA]
 
+  # 6. блог: список, запись, RSS
+  RewriteRule ^blog/?$ blog.php [L]
+  RewriteRule ^blog/rss\.xml$ blog-rss.php [L]
+  RewriteRule ^blog/([a-z0-9-]+)/?$ blog.php?slug=$1 [L,QSA]
   # 5. карта сайта генерируется PHP — вместе с товарами
   RewriteRule ^sitemap\.xml$ sitemap.php [L]
 </IfModule>

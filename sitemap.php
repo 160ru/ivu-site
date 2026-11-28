@@ -15,11 +15,13 @@ $static = [
     ['loc' => 'https://ivu.ru/',               'priority' => '1.0', 'changefreq' => 'weekly'],
     ['loc' => 'https://ivu.ru/new.html',       'priority' => '0.9', 'changefreq' => 'daily'],
     ['loc' => 'https://ivu.ru/used.html',      'priority' => '0.9', 'changefreq' => 'daily'],
+    ['loc' => 'https://ivu.ru/blog/', 'priority' => '0.8', 'changefreq' => 'weekly'],
     ['loc' => 'https://ivu.ru/requisites.html','priority' => '0.5', 'changefreq' => 'yearly'],
     ['loc' => 'https://ivu.ru/privacy.html',   'priority' => '0.2', 'changefreq' => 'yearly'],
 ];
 
 $items = [];
+$blogPosts = [];
 if (is_file($dbFile)) {
     try {
         $pdo = new PDO('sqlite:' . $dbFile, null, null, [
@@ -27,8 +29,10 @@ if (is_file($dbFile)) {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
         $items = $pdo->query('SELECT id, created FROM items ORDER BY created DESC')->fetchAll();
+        $blogPosts = $pdo->query('SELECT slug, created, updated FROM posts WHERE published = 1 ORDER BY created DESC')->fetchAll();
     } catch (Throwable $error) {
         $items = [];
+$blogPosts = [];
     }
 }
 
@@ -53,6 +57,18 @@ foreach ($items as $item) {
     echo '    <lastmod>' . $lastmod . "</lastmod>\n";
     echo "    <changefreq>weekly</changefreq>\n";
     echo "    <priority>0.7</priority>\n";
+    echo "  </url>\n";
+}
+
+foreach ($blogPosts as $entry) {
+    $lastmod = (string) $entry['updated'] !== ''
+        ? date('Y-m-d', strtotime((string) $entry['updated']))
+        : date('Y-m-d', strtotime((string) $entry['created']));
+    echo "  <url>\n";
+    echo '    <loc>https://ivu.ru/blog/' . htmlspecialchars((string) $entry['slug'], ENT_QUOTES, 'UTF-8') . "</loc>\n";
+    echo '    <lastmod>' . $lastmod . "</lastmod>\n";
+    echo "    <changefreq>monthly</changefreq>\n";
+    echo "    <priority>0.6</priority>\n";
     echo "  </url>\n";
 }
 
