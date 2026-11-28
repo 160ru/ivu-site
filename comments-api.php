@@ -163,6 +163,21 @@ try {
         ':ip' => $ipHash,
     ]);
 
+    // письмо о новом вопросе — чтобы не проверять панель вручную
+    $notifyTo = defined('COMMENT_EMAIL') && COMMENT_EMAIL !== '' ? COMMENT_EMAIL : 'it@ivu.ru';
+    $subject = 'Новый вопрос на сайте' . ($autoApprove === '1' ? ' (опубликован)' : ' (ждёт проверки)');
+    $body = 'Товар №' . $item . "\n"
+        . 'Имя: ' . $name . "\n"
+        . 'Связь: ' . ($contact !== '' ? $contact : 'не указана') . "\n\n"
+        . $text . "\n\n"
+        . "Панель: https://ivu.ru/admin/\n";
+    @mail(
+        $notifyTo,
+        '=?UTF-8?B?' . base64_encode($subject) . '?=',
+        $body,
+        "From: ivu.ru <no-reply@ivu.ru>\r\nContent-Type: text/plain; charset=UTF-8\r\n"
+    );
+
     out(['ok' => true, 'moderated' => $autoApprove !== '1']);
 } catch (Throwable $error) {
     out(['error' => 'Не удалось сохранить. Попробуйте позже.'], 500);

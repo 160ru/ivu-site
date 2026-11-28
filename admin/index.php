@@ -155,17 +155,52 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $message = '';
 $error = '';
 
+/** Адрес посетителя в виде хеша — сырой IP в базу не пишем. */
+function clientHash(): string
+{
+    return hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . 'ivu-admin');
+}
+
+/** Сколько неудачных попыток входа было за последний час. */
+function failedAttempts(): int
+{
+    db()->exec('CREATE TABLE IF NOT EXISTS login_attempts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ip_hash TEXT NOT NULL,
+        created TEXT NOT NULL)');
+    $stmt = db()->prepare('SELECT COUNT(*) FROM login_attempts WHERE ip_hash = :ip AND created > :since');
+    $stmt->execute([':ip' => clientHash(), ':since' => date('c', time() - 3600)]);
+    return (int) $stmt->fetchColumn();
+}
+
+function registerFailure(): void
+{
+    db()->prepare('INSERT INTO login_attempts (ip_hash, created) VALUES (:ip, :created)')
+        ->execute([':ip' => clientHash(), ':created' => date('c')]);
+}
+
+function clearFailures(): void
+{
+    db()->prepare('DELETE FROM login_attempts WHERE ip_hash = :ip')->execute([':ip' => clientHash()]);
+}
+
 // ---------- вход ----------
 if ($action === 'login') {
     checkCsrf();
     $password = (string) ($_POST['password'] ?? '');
-    if (password_verify($password, ADMIN_PASSWORD_HASH)) {
+
+    if (failedAttempts() >= 10) {
+        $error = 'Слишком много неудачных попыток. Вход заблокирован на час.';
+    } elseif (password_verify($password, ADMIN_PASSWORD_HASH)) {
+        clearFailures();
         $_SESSION['auth'] = true;
         session_regenerate_id(true);
         header('Location: /admin/');
         exit;
+    } else {
+        registerFailure();
+        $error = 'Неверный пароль';
     }
-    $error = 'Неверный пароль';
 }
 
 if ($action === 'logout') {

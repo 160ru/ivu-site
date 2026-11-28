@@ -4,13 +4,13 @@
 # Кодировка по умолчанию
 AddDefaultCharset UTF-8
 
-# Главная страница
+# Главная страница: сначала статика, затем панель каталога
 DirectoryIndex index.html index.php
 
 # Своя страница 404
 ErrorDocument 404 /404.html
 
-# Запрет листинга каталогов (если нет index.html)
+# Запрет листинга каталогов
 <IfModule mod_autoindex.c>
   Options -Indexes
 </IfModule>
@@ -24,7 +24,7 @@ ErrorDocument 404 /404.html
   RewriteEngine On
   RewriteBase /
 
-  # 1. www.ivu.ru -> ivu.ru (один канонический адрес, чтобы не дублировать контент)
+  # 1. www.ivu.ru -> ivu.ru (один канонический адрес)
   RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
   RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
@@ -34,6 +34,12 @@ ErrorDocument 404 /404.html
 
   # 3. старый адрес прежнего сайта — на актуальную страницу реквизитов
   RewriteRule ^requirements\.html$ https://ivu.ru/requisites.html [R=301,L]
+
+  # 4. страница товара: /tovar/123
+  RewriteRule ^tovar/([0-9]+)/?$ tovar.php?id=$1 [L,QSA]
+
+  # 5. карта сайта генерируется PHP — вместе с товарами
+  RewriteRule ^sitemap\.xml$ sitemap.php [L]
 </IfModule>
 
 # Сжатие текстовых файлов
@@ -56,14 +62,13 @@ ErrorDocument 404 /404.html
   ExpiresByType font/woff2 "access plus 30 days"
 </IfModule>
 
-# Базовые защитные заголовки
+# Заголовки безопасности
 <IfModule mod_headers.c>
   <If "%{REQUEST_URI} =~ m#^/admin/#">
     Header set X-Robots-Tag "noindex, nofollow"
   </If>
-  # HSTS: браузер год не будет обращаться к сайту по http, даже если попросить.
-  # Включён вместе с поддоменами — других поддоменов, кроме www, у домена нет.
-  # Чтобы отключить, замените max-age на 0 и дождитесь истечения срока у посетителей.
+
+  # HSTS: браузер год не будет обращаться к сайту по http
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"

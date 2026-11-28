@@ -94,7 +94,12 @@
     if (item.date) meta.appendChild(el("span", "product__date", item.date));
     if (meta.childNodes.length) body.appendChild(meta);
 
-    body.appendChild(el("h2", "product__title", item.title || "Без названия"));
+    var titleNode = el("h2", "product__title");
+    var titleLink = document.createElement("a");
+    titleLink.href = "tovar/" + item.id;
+    titleLink.textContent = item.title || "Без названия";
+    titleNode.appendChild(titleLink);
+    body.appendChild(titleNode);
     body.appendChild(el("p", "product__price", money(item.price)));
     if (item.desc) body.appendChild(el("p", "product__desc", item.desc));
 
@@ -113,6 +118,12 @@
       call.href = "tel:+74932353070";
       call.textContent = "Позвонить";
       actions.appendChild(call);
+      var more = document.createElement("a");
+      more.className = "btn btn--sm btn--ghost";
+      more.href = "tovar/" + item.id;
+      more.textContent = "Подробнее";
+      actions.appendChild(more);
+
       body.appendChild(actions);
     }
 
