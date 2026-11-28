@@ -172,7 +172,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="stylesheet" href="/assets/style.css?v=20261165">
+<link rel="stylesheet" href="/assets/style.css?v=20261166">
 <?php if ($post !== null): ?>
 <script type="application/ld+json">
 {
@@ -204,7 +204,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/index.html" aria-label="Интер-Техника-Плюс — на главную">
-      <img class="brand-logo" src="/assets/logo.png?v=20261165" alt="Интер-Техника-Плюс" width="112" height="44">
+      <img class="brand-logo" src="/assets/logo.png?v=20261166" alt="Интер-Техника-Плюс" width="112" height="44">
       <span class="brand-name">Интер-Техника<span class="brand-plus">+</span></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
@@ -397,6 +397,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     </div>
   </div>
 </footer>
-<script src="/assets/app.js?v=20261165" defer></script>
+<script src="/assets/app.js?v=20261166" defer></script>
+<script src="/assets/hours.js?v=20261166" defer></script>
 </body>
 </html>

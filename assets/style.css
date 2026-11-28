@@ -1834,3 +1834,27 @@ body > main { flex: 1 0 auto; }
   transition: transform .18s ease;
 }
 .hero-card:hover .hero-card__arrow { transform: translateX(3px); }
+/* Нерабочее время: пометка и окно с предложением чата */
+.hours-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fdece3;
+  color: var(--red-text);
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: none;
+  vertical-align: middle;
+}
+
+.hours-modal__panel { max-width: 460px; }
+.hours-modal__text { margin: 0 0 10px; font-size: .95rem; line-height: 1.55; color: var(--ink); }
+.hours-modal__hours { margin: 0 0 18px; font-size: .85rem; line-height: 1.5; color: var(--ink-soft); }
+.hours-modal__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* на узких экранах кнопки в окне — в столбик */
+@media (max-width: 480px) {
+  .hours-modal__actions .btn { width: 100%; }
+}
