@@ -63,6 +63,7 @@
 
   // ---------- окно ----------
   var modal = null;
+  var openingText = "";
 
   function buildModal() {
     var wrap = document.createElement("div");
@@ -121,6 +122,89 @@
 
     panel.appendChild(actions);
 
+    // ---- заявка на обратный звонок ----
+    var form = document.createElement("form");
+    form.className = "hours-form";
+    form.noValidate = true;
+
+    var hp = document.createElement("input");
+    hp.type = "text";
+    hp.name = "hp";
+    hp.className = "hours-form__hp";
+    hp.tabIndex = -1;
+    hp.autocomplete = "off";
+    form.appendChild(hp);
+
+    var formTitle = document.createElement("p");
+    formTitle.className = "hours-form__title";
+    formTitle.textContent = "Или оставьте номер — перезвоним первым делом";
+    form.appendChild(formTitle);
+
+    var row = document.createElement("div");
+    row.className = "hours-form__row";
+
+    var input = document.createElement("input");
+    input.type = "tel";
+    input.name = "phone";
+    input.className = "hours-form__input";
+    input.placeholder = "+7 900 000-00-00";
+    input.autocomplete = "tel";
+    input.inputMode = "tel";
+    input.required = true;
+    input.setAttribute("aria-label", "Ваш телефон");
+    row.appendChild(input);
+
+    var submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "btn btn--sm btn--ghost";
+    submit.textContent = "Перезвоните мне";
+    row.appendChild(submit);
+
+    form.appendChild(row);
+
+    var formStatus = document.createElement("p");
+    formStatus.className = "hours-form__status";
+    formStatus.setAttribute("role", "status");
+    form.appendChild(formStatus);
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var phone = input.value.trim();
+      var digits = phone.replace(/\D+/g, "");
+
+      formStatus.className = "hours-form__status";
+      if (digits.length < 10) {
+        formStatus.textContent = "Проверьте номер — нужно не меньше 10 цифр";
+        formStatus.classList.add("hours-form__status--err");
+        input.focus();
+        return;
+      }
+
+      submit.disabled = true;
+      formStatus.textContent = "Отправляем…";
+
+      fetch("/callback-api.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phone, hp: hp.value })
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (result) {
+          if (result.error) throw new Error(result.error);
+          form.reset();
+          formStatus.textContent = "Спасибо! Перезвоним в рабочее время — " + openingText + ".";
+          formStatus.classList.add("hours-form__status--ok");
+          submit.disabled = true;
+        })
+        .catch(function (error) {
+          formStatus.textContent = error.message || "Не получилось отправить. Позвоните сами.";
+          formStatus.classList.add("hours-form__status--err");
+          submit.disabled = false;
+        });
+    });
+
+    panel.appendChild(form);
+
     wrap.appendChild(panel);
     wrap.addEventListener("click", function (event) {
       if (event.target === wrap) {
@@ -143,6 +227,7 @@
     }
     var now = msk();
     var when = nextOpening(now);
+    openingText = when;
     modal.text.textContent = "Сейчас " + now.time + " — офис закрыт. Откроемся " + when + ".";
     modal.note.textContent = "В чате ответим " + when + ". Если вопрос срочный — " +
       "оставьте в сообщении номер телефона, перезвоним первым делом.";

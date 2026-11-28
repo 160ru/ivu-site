@@ -55,8 +55,11 @@ function db(): PDO
         )');
         $pdo->exec('CREATE TABLE IF NOT EXISTS post_comments (
             id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, name TEXT NOT NULL,
-            text TEXT NOT NULL, contact TEXT DEFAULT ", created TEXT NOT NULL,
-            approved INTEGER NOT NULL DEFAULT 0, ip_hash TEXT DEFAULT ")');
+            text TEXT NOT NULL, contact TEXT DEFAULT "", created TEXT NOT NULL,
+            approved INTEGER NOT NULL DEFAULT 0, ip_hash TEXT DEFAULT "")');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS callbacks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, phone TEXT NOT NULL, name TEXT DEFAULT "",
+            created TEXT NOT NULL, processed INTEGER NOT NULL DEFAULT 0, ip_hash TEXT DEFAULT "")');
         $pdo->exec('CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             slug TEXT NOT NULL UNIQUE,
@@ -230,7 +233,7 @@ $authorized = !empty($_SESSION['auth']);
 
 // ---------- действия только для авторизованных ----------
 if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete'], true)) {
+    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete', 'callback-done', 'callback-delete'], true)) {
         checkCsrf();
     }
 
@@ -471,6 +474,22 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($action === 'callback-done') {
+        $cbId = (int) ($_POST['callback_id'] ?? 0);
+        if ($cbId > 0) {
+            db()->prepare('UPDATE callbacks SET processed = 1 - processed WHERE id = :id')->execute([':id' => $cbId]);
+            $message = 'Заявка отмечена';
+        }
+    }
+
+    if ($action === 'callback-delete') {
+        $cbId = (int) ($_POST['callback_id'] ?? 0);
+        if ($cbId > 0) {
+            db()->prepare('DELETE FROM callbacks WHERE id = :id')->execute([':id' => $cbId]);
+            $message = 'Заявка удалена';
+        }
+    }
+
     if ($action === 'photo-delete') {
         $photoId = (int) ($_POST['photo_id'] ?? 0);
         if ($photoId > 0) {
@@ -543,6 +562,9 @@ if ($authorized) {
         ORDER BY c.approved ASC, c.created DESC LIMIT 100')->fetchAll();
     $postPending = 0;
     foreach ($postComments as $pc) { if ((int) $pc['approved'] === 0) { $postPending++; } }
+    $callbacks = db()->query('SELECT * FROM callbacks ORDER BY processed ASC, created DESC LIMIT 100')->fetchAll();
+    $callbacksNew = 0;
+    foreach ($callbacks as $cb) { if ((int) $cb['processed'] === 0) { $callbacksNew++; } }
     $posts = db()->query('SELECT * FROM posts ORDER BY created DESC')->fetchAll();
     $editPost = null;
     $editPostId = (int) ($_GET['post'] ?? 0);
@@ -815,6 +837,43 @@ $pages = max(1, (int) ceil($total / $perPage));
       <?php endforeach; ?>
       <?php if (!$posts): ?>
         <tr><td colspan="3" class="small">Записей пока нет.</td></tr>
+      <?php endif; ?>
+      </tbody>
+    </table>
+  </fieldset>
+  <fieldset>
+    <legend>Заявки на звонок<?= $callbacksNew > 0 ? ' — новых: ' . (int) $callbacksNew : '' ?></legend>
+    <table>
+      <thead><tr><th>Телефон</th><th>Когда</th><th>Статус</th><th></th></tr></thead>
+      <tbody>
+      <?php foreach ($callbacks as $cb): ?>
+        <tr>
+          <td>
+            <strong><a href="tel:<?= e(preg_replace('/[^\d+]/', '', (string) $cb['phone']) ?? '') ?>"><?= e($cb['phone']) ?></a></strong>
+            <?php if ((string) $cb['name'] !== ''): ?><div class="small"><?= e($cb['name']) ?></div><?php endif; ?>
+          </td>
+          <td class="small"><?= e(date('d.m.Y H:i', strtotime((string) $cb['created']))) ?></td>
+          <td class="small"><?= (int) $cb['processed'] === 1 ? 'обработана' : '<strong>ждёт</strong>' ?></td>
+          <td>
+            <div class="inline">
+              <form method="post" action="/admin/">
+                <input type="hidden" name="action" value="callback-done">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="callback_id" value="<?= (int) $cb['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit"><?= (int) $cb['processed'] === 1 ? 'Вернуть' : 'Обработана' ?></button>
+              </form>
+              <form method="post" action="/admin/" onsubmit="return confirm('Удалить заявку?')">
+                <input type="hidden" name="action" value="callback-delete">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="callback_id" value="<?= (int) $cb['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit">Удалить</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      <?php if (!$callbacks): ?>
+        <tr><td colspan="4" class="small">Заявок пока нет.</td></tr>
       <?php endif; ?>
       </tbody>
     </table>

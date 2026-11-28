@@ -1868,3 +1868,28 @@ body > main { flex: 1 0 auto; }
   line-height: 1.5;
   color: var(--ink);
 }
+/* Форма обратного звонка в окне нерабочего времени */
+.hours-form { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.hours-form__title { margin: 0 0 10px; font-size: .88rem; color: var(--ink-soft); }
+.hours-form__row { display: flex; flex-wrap: wrap; gap: 8px; }
+.hours-form__input {
+  flex: 1 1 170px;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: .92rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.hours-form__input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+.hours-form__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.hours-form__status { margin: 10px 0 0; font-size: .82rem; color: var(--ink-soft); }
+.hours-form__status--ok { color: #1c6b3a; }
+.hours-form__status--err { color: var(--red-text); }
+
+@media (max-width: 480px) {
+  .hours-form__row .btn { width: 100%; }
+}
