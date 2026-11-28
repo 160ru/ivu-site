@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-27T18:48:26.577Z",
+  "generated": "2026-11-28T00:56:43.575Z",
   "items": [
     {
       "title": "Учет ГОЗ в 1С по постановлению № 874 — от первички до отчёта по партии",
@@ -16,6 +16,13 @@
       "manual": false
     },
     {
+      "title": "DoS ноды или настройки K8s, которые вы могли пропустить",
+      "url": "https://habr.com/ru/articles/1113438/?utm_campaign=1113438&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-27",
+      "source": "Хабр · Безопасность",
+      "manual": false
+    },
+    {
       "title": "Beget: регистрация и перенос доменов снова доступны",
       "url": "https://habr.com/ru/articles/1113388/?utm_campaign=1113388&utm_source=habrahabr&utm_medium=rss",
       "date": "2026-11-27",
@@ -23,22 +30,15 @@
       "manual": false
     },
     {
-      "title": "Ratcast — продолжаем допиливать совместный стриминг без серверов и блокировок",
-      "url": "https://habr.com/ru/articles/1113374/?utm_campaign=1113374&utm_source=habrahabr&utm_medium=rss",
-      "date": "2026-11-27",
-      "source": "Хабр · Безопасность",
-      "manual": false
-    },
-    {
-      "title": "По ком звонит Гигачат?",
-      "url": "https://habr.com/ru/articles/1113400/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113400",
+      "title": "Mintland — анимированные обои для Linux Mint Cinnamon",
+      "url": "https://habr.com/ru/articles/1113454/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113454",
       "date": "2026-11-27",
       "source": "Хабр",
       "manual": false
     },
     {
-      "title": "Половина работы моих ИИ-агентов уходит на хозяйство. На деньги 4%",
-      "url": "https://habr.com/ru/articles/1113396/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113396",
+      "title": "Rockstar Games: разбор логотипа заряженного на насилие",
+      "url": "https://habr.com/ru/articles/1113452/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113452",
       "date": "2026-11-27",
       "source": "Хабр",
       "manual": false
