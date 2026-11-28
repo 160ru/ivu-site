@@ -109,12 +109,15 @@
 
     if (!item.sold) {
       var actions = el("p", "product__actions");
-      var order = document.createElement("a");
+      var order = document.createElement("button");
+      order.type = "button";
       order.className = "btn btn--sm";
-      order.href = CHAT;
-      order.target = "_blank";
-      order.rel = "noopener";
       order.textContent = "Заказать";
+      order.addEventListener("click", function () {
+        if (window.ivuOrder) {
+          window.ivuOrder(item.title, item.price);
+        }
+      });
       actions.appendChild(order);
 
       body.appendChild(actions);

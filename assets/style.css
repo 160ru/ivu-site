@@ -1987,3 +1987,13 @@ body > main { flex: 1 0 auto; }
   }
   .post-card--wide .post-card__media { aspect-ratio: 16 / 9; }
 }
+/* Окно заказа товара */
+.order-modal__panel { max-width: 440px; }
+.order-modal__about { margin: 0 0 16px; font-size: .95rem; font-weight: 600; color: var(--ink); }
+.order-form { display: grid; gap: 10px; }
+.order-form__label > span { display: block; margin-bottom: 6px; font-size: .82rem; color: var(--ink-soft); }
+.order-form__hint { margin: 0; font-size: .8rem; line-height: 1.45; color: var(--ink-soft); }
+.order-form__status { margin: 0; font-size: .82rem; color: var(--ink-soft); }
+.order-form__status--ok { color: #1c6b3a; }
+.order-form__status--err { color: var(--red-text); }
+.order-modal__alt { margin: 14px 0 0; font-size: .85rem; }

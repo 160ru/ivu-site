@@ -51,6 +51,7 @@ if (!empty($data['hp'])) {
 }
 
 $phone = cleanText((string) ($data['phone'] ?? ''), 40);
+$note = cleanText((string) ($data['note'] ?? ''), 140);
 $name = cleanText((string) ($data['name'] ?? ''), 60);
 
 $digits = preg_replace('/\D+/', '', $phone) ?? '';
@@ -67,10 +68,23 @@ try {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         phone TEXT NOT NULL,
         name TEXT DEFAULT "",
+        note TEXT DEFAULT "",
         created TEXT NOT NULL,
         processed INTEGER NOT NULL DEFAULT 0,
         ip_hash TEXT DEFAULT ""
     )');
+
+    // на старых базах колонки note нет — добавляем
+    $columns = $pdo->query('PRAGMA table_info(callbacks)')->fetchAll();
+    $hasNote = false;
+    foreach ($columns as $column) {
+        if ($column['name'] === 'note') {
+            $hasNote = true;
+        }
+    }
+    if (!$hasNote) {
+        $pdo->exec('ALTER TABLE callbacks ADD COLUMN note TEXT DEFAULT ""');
+    }
 
     $ipHash = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . 'ivu-callback');
 
@@ -80,11 +94,12 @@ try {
         out(['error' => 'Слишком много заявок подряд. Попробуйте через час.'], 429);
     }
 
-    $stmt = $pdo->prepare('INSERT INTO callbacks (phone, name, created, ip_hash)
-        VALUES (:phone, :name, :created, :ip)');
+    $stmt = $pdo->prepare('INSERT INTO callbacks (phone, name, note, created, ip_hash)
+        VALUES (:phone, :name, :note, :created, :ip)');
     $stmt->execute([
         ':phone' => $phone,
         ':name' => $name,
+        ':note' => $note,
         ':created' => date('c'),
         ':ip' => $ipHash,
     ]);
@@ -96,6 +111,7 @@ $notifyTo = defined('COMMENT_EMAIL') && COMMENT_EMAIL !== '' ? COMMENT_EMAIL : '
 $subject = 'Просят перезвонить: ' . $phone;
 $body = 'Номер: ' . $phone . "\n"
     . ($name !== '' ? 'Имя: ' . $name . "\n" : '')
+    . ($note !== '' ? 'Что: ' . $note . "\n" : '')
     . 'Когда: ' . date('d.m.Y H:i') . " (Москва)\n"
     . "Источник: всплывающее окно «нерабочее время»\n\n"
     . "Список заявок: https://ivu.ru/admin/\n";
