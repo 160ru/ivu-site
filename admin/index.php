@@ -52,6 +52,10 @@ function db(): PDO
             file TEXT NOT NULL,
             ord INTEGER NOT NULL DEFAULT 0
         )');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS post_comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, name TEXT NOT NULL,
+            text TEXT NOT NULL, contact TEXT DEFAULT ", created TEXT NOT NULL,
+            approved INTEGER NOT NULL DEFAULT 0, ip_hash TEXT DEFAULT ")');
         $pdo->exec('CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             slug TEXT NOT NULL UNIQUE,
@@ -225,7 +229,7 @@ $authorized = !empty($_SESSION['auth']);
 
 // ---------- действия только для авторизованных ----------
 if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish'], true)) {
+    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete'], true)) {
         checkCsrf();
     }
 
@@ -450,6 +454,22 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($action === 'pcomment-approve') {
+        $cid = (int) ($_POST['comment_id'] ?? 0);
+        if ($cid > 0) {
+            db()->prepare('UPDATE post_comments SET approved = 1 - approved WHERE id = :id')->execute([':id' => $cid]);
+            $message = 'Комментарий опубликован или снят';
+        }
+    }
+
+    if ($action === 'pcomment-delete') {
+        $cid = (int) ($_POST['comment_id'] ?? 0);
+        if ($cid > 0) {
+            db()->prepare('DELETE FROM post_comments WHERE id = :id')->execute([':id' => $cid]);
+            $message = 'Комментарий удалён';
+        }
+    }
+
     if ($action === 'photo-delete') {
         $photoId = (int) ($_POST['photo_id'] ?? 0);
         if ($photoId > 0) {
@@ -517,6 +537,11 @@ if ($authorized) {
             $pendingCount++;
         }
     }
+    $postComments = db()->query('SELECT c.*, p.title AS post_title, p.slug AS post_slug
+        FROM post_comments c LEFT JOIN posts p ON p.id = c.post_id
+        ORDER BY c.approved ASC, c.created DESC LIMIT 100')->fetchAll();
+    $postPending = 0;
+    foreach ($postComments as $pc) { if ((int) $pc['approved'] === 0) { $postPending++; } }
     $posts = db()->query('SELECT * FROM posts ORDER BY created DESC')->fetchAll();
     $editPost = null;
     $editPostId = (int) ($_GET['post'] ?? 0);
@@ -789,6 +814,45 @@ $pages = max(1, (int) ceil($total / $perPage));
       <?php endforeach; ?>
       <?php if (!$posts): ?>
         <tr><td colspan="3" class="small">Записей пока нет.</td></tr>
+      <?php endif; ?>
+      </tbody>
+    </table>
+  </fieldset>
+  <fieldset>
+    <legend>Комментарии блога<?= $postPending > 0 ? ' — ждут проверки: ' . (int) $postPending : '' ?></legend>
+    <table>
+      <thead><tr><th>Комментарий</th><th>Запись</th><th>Статус</th><th></th></tr></thead>
+      <tbody>
+      <?php foreach ($postComments as $pc): ?>
+        <tr>
+          <td>
+            <strong><?= e($pc['name']) ?></strong>
+            <div class="small"><?= e($pc['text']) ?></div>
+            <?php if ((string) $pc['contact'] !== ''): ?><div class="small">Связь: <?= e($pc['contact']) ?></div><?php endif; ?>
+            <div class="small"><?= e(date('d.m.Y H:i', strtotime((string) $pc['created']))) ?></div>
+          </td>
+          <td class="small"><?= e($pc['post_title'] ?? '— запись удалена —') ?></td>
+          <td class="small"><?= (int) $pc['approved'] === 1 ? 'опубликован' : 'ждёт проверки' ?></td>
+          <td>
+            <div class="inline">
+              <form method="post" action="/admin/">
+                <input type="hidden" name="action" value="pcomment-approve">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="comment_id" value="<?= (int) $pc['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit"><?= (int) $pc['approved'] === 1 ? 'Снять' : 'Опубликовать' ?></button>
+              </form>
+              <form method="post" action="/admin/" onsubmit="return confirm('Удалить комментарий?')">
+                <input type="hidden" name="action" value="pcomment-delete">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="comment_id" value="<?= (int) $pc['id'] ?>">
+                <button class="btn btn--sm btn--ghost" type="submit">Удалить</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      <?php if (!$postComments): ?>
+        <tr><td colspan="4" class="small">Комментариев пока нет.</td></tr>
       <?php endif; ?>
       </tbody>
     </table>

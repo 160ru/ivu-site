@@ -16,6 +16,14 @@ $base = dirname(__DIR__);
 $dbFile = $base . '/data/catalog.db';
 $uploadUrl = '/uploads/blog/';
 $uploadDir = __DIR__ . '/uploads/blog';
+$configFile = $base . '/data/config.php';
+
+if (is_file($configFile)) {
+    require_once $configFile;
+}
+$yandexReady = defined('YANDEX_CLIENT_ID') && YANDEX_CLIENT_ID !== ''
+    && defined('YANDEX_CLIENT_SECRET') && YANDEX_CLIENT_SECRET !== '';
+$loggedUser = isset($_SESSION['yandex']) && is_array($_SESSION['yandex']) ? $_SESSION['yandex'] : null;
 
 function e(string $text): string
 {
@@ -61,6 +69,7 @@ function formatBody(string $text): string
 $pdo = null;
 $posts = [];
 $post = null;
+$postComments = [];
 
 if (is_file($dbFile)) {
     try {
@@ -90,6 +99,23 @@ if ($pdo !== null) {
         $stmt = $pdo->prepare('SELECT * FROM posts WHERE slug = :slug AND published = 1');
         $stmt->execute([':slug' => $slug]);
         $post = $stmt->fetch() ?: null;
+
+        if ($post !== null) {
+            $pdo->exec('CREATE TABLE IF NOT EXISTS post_comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                text TEXT NOT NULL,
+                contact TEXT DEFAULT "",
+                created TEXT NOT NULL,
+                approved INTEGER NOT NULL DEFAULT 0,
+                ip_hash TEXT DEFAULT ""
+            )');
+            $stmt = $pdo->prepare('SELECT name, text, created FROM post_comments
+                WHERE post_id = :id AND approved = 1 ORDER BY created ASC LIMIT 200');
+            $stmt->execute([':id' => $post['id']]);
+            $postComments = $stmt->fetchAll();
+        }
     } else {
         $posts = $pdo->query('SELECT slug, title, excerpt, cover, created FROM posts
             WHERE published = 1 ORDER BY created DESC LIMIT 50')->fetchAll();
@@ -211,6 +237,83 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     <div class="post__body">
       <?= formatBody((string) $post['body']) ?>
     </div>
+
+    <section class="tovar__comments" id="comments">
+      <h2 class="tovar__h2">Комментарии</h2>
+
+      <div id="post-comments">
+        <?php if (!$postComments): ?>
+          <p class="tovar__empty">Пока комментариев нет. Будьте первым.</p>
+        <?php else: ?>
+          <?php foreach ($postComments as $comment): ?>
+            <div class="tovar__comment">
+              <p class="tovar__comment-head">
+                <strong><?= e($comment['name']) ?></strong>
+                <span><?= e(date('d.m.Y', strtotime((string) $comment['created']))) ?></span>
+              </p>
+              <p class="tovar__comment-text"><?= nl2br(e($comment['text'])) ?></p>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+
+      <?php if ($yandexReady && $loggedUser === null): ?>
+        <p class="tovar__login-note">
+          Комментировать могут только авторизованные пользователи — так меньше спама.
+        </p>
+        <p><a class="btn btn--sm" href="/auth.php?action=start">Войти через Яндекс</a></p>
+      <?php else: ?>
+        <form class="tovar__form" id="post-comment-form">
+          <input type="text" name="hp" class="tovar__hp" tabindex="-1" autocomplete="off">
+          <?php if ($yandexReady): ?>
+            <p class="tovar__login-note">Вы вошли как <strong><?= e($loggedUser['name'] ?? '') ?></strong></p>
+          <?php else: ?>
+            <label class="tovar__label"><span>Ваше имя</span><input type="text" name="name" maxlength="60" required></label>
+          <?php endif; ?>
+          <label class="tovar__label"><span>Телефон или почта (необязательно)</span><input type="text" name="contact" maxlength="80"></label>
+          <label class="tovar__label"><span>Комментарий</span><textarea name="text" maxlength="1500" required></textarea></label>
+          <p><button class="btn" type="submit">Отправить</button></p>
+          <p class="tovar__status" id="post-comment-status" role="status"></p>
+        </form>
+      <?php endif; ?>
+    </section>
+
+    <script>
+    (function () {
+      var form = document.getElementById("post-comment-form");
+      if (!form) return;
+      var status = document.getElementById("post-comment-status");
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var data = {
+          type: "post",
+          post: <?= (int) $post['id'] ?>,
+          name: form.name ? form.name.value.trim() : "",
+          text: form.text.value.trim(),
+          contact: form.contact.value.trim(),
+          hp: form.hp.value
+        };
+        status.textContent = "Отправляем…";
+        status.className = "tovar__status";
+        fetch("/comments-api.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (result) {
+            if (result.error) throw new Error(result.error);
+            form.reset();
+            status.textContent = "Спасибо! Комментарий получили — опубликуем после проверки.";
+            status.className = "tovar__status tovar__status--ok";
+          })
+          .catch(function (error) {
+            status.textContent = error.message || "Не удалось отправить.";
+            status.className = "tovar__status tovar__status--err";
+          });
+      });
+    })();
+    </script>
 
     <p class="post__back"><a class="link-arrow" href="/blog/">← Все записи</a></p>
   </article>

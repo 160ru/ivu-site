@@ -53,6 +53,16 @@ function db(): PDO
             approved INTEGER NOT NULL DEFAULT 0,
             ip_hash TEXT DEFAULT ""
         )');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS post_comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            text TEXT NOT NULL,
+            contact TEXT DEFAULT "",
+            created TEXT NOT NULL,
+            approved INTEGER NOT NULL DEFAULT 0,
+            ip_hash TEXT DEFAULT ""
+        )');
         $pdo->exec('CREATE TABLE IF NOT EXISTS settings (
             key TEXT PRIMARY KEY,
             value TEXT
@@ -75,14 +85,25 @@ try {
 
     // ---------- чтение ----------
     if ($method === 'GET') {
-        $item = (int) ($_GET['item'] ?? 0);
-        if ($item <= 0) {
-            out(['error' => 'нет товара'], 400);
-        }
+        $isPost = ($_GET['type'] ?? '') === 'post';
 
-        $stmt = $pdo->prepare('SELECT name, text, created FROM comments
-            WHERE item_id = :id AND approved = 1 ORDER BY created ASC LIMIT 100');
-        $stmt->execute([':id' => $item]);
+        if ($isPost) {
+            $postId = (int) ($_GET['post'] ?? 0);
+            if ($postId <= 0) {
+                out(['error' => 'нет записи'], 400);
+            }
+            $stmt = $pdo->prepare('SELECT name, text, created FROM post_comments
+                WHERE post_id = :id AND approved = 1 ORDER BY created ASC LIMIT 200');
+            $stmt->execute([':id' => $postId]);
+        } else {
+            $item = (int) ($_GET['item'] ?? 0);
+            if ($item <= 0) {
+                out(['error' => 'нет товара'], 400);
+            }
+            $stmt = $pdo->prepare('SELECT name, text, created FROM comments
+                WHERE item_id = :id AND approved = 1 ORDER BY created ASC LIMIT 100');
+            $stmt->execute([':id' => $item]);
+        }
 
         $items = [];
         foreach ($stmt->fetchAll() as $row) {
@@ -112,7 +133,9 @@ try {
         out(['ok' => true]);   // роботу отвечаем «успешно», чтобы не искал обход
     }
 
-    $item = (int) ($data['item'] ?? 0);
+    $isPost = ($data['type'] ?? '') === 'post';
+    $item = $isPost ? 0 : (int) ($data['item'] ?? 0);
+    $postId = $isPost ? (int) ($data['post'] ?? 0) : 0;
     $name = clean((string) ($data['name'] ?? ''), 60);
     $text = clean((string) ($data['text'] ?? ''), 1500);
     $contact = clean((string) ($data['contact'] ?? ''), 80);
@@ -121,29 +144,38 @@ try {
     // имя берём из профиля.
     if ($yandexReady) {
         if ($loggedUser === null) {
-            out(['error' => 'Чтобы задать вопрос, войдите через Яндекс'], 401);
+            out(['error' => 'Чтобы оставить сообщение, войдите через Яндекс'], 401);
         }
         $name = clean((string) ($loggedUser['name'] ?? 'Пользователь Яндекса'), 60);
     }
 
-    if ($item <= 0) {
-        out(['error' => 'Товар не найден'], 400);
+    if ($isPost) {
+        if ($postId <= 0) {
+            out(['error' => 'Запись не найдена'], 400);
+        }
+        $exists = $pdo->prepare('SELECT COUNT(*) FROM posts WHERE id = :id AND published = 1');
+        $exists->execute([':id' => $postId]);
+    } else {
+        if ($item <= 0) {
+            out(['error' => 'Товар не найден'], 400);
+        }
+        $exists = $pdo->prepare('SELECT COUNT(*) FROM items WHERE id = :id');
+        $exists->execute([':id' => $item]);
     }
+    if ((int) $exists->fetchColumn() === 0) {
+        out(['error' => 'Не найдено'], 404);
+    }
+
     if (mb_strlen($name) < 2) {
         out(['error' => 'Напишите, как к вам обращаться'], 400);
     }
     if (mb_strlen($text) < 10) {
-        out(['error' => 'Вопрос слишком короткий — добавьте пару слов'], 400);
-    }
-
-    $exists = $pdo->prepare('SELECT COUNT(*) FROM items WHERE id = :id');
-    $exists->execute([':id' => $item]);
-    if ((int) $exists->fetchColumn() === 0) {
-        out(['error' => 'Товар не найден'], 404);
+        out(['error' => 'Сообщение слишком короткое — добавьте пару слов'], 400);
     }
 
     $ipHash = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . 'ivu-catalog');
-    $rate = $pdo->prepare('SELECT COUNT(*) FROM comments WHERE ip_hash = :ip AND created > :since');
+    $table = $isPost ? 'post_comments' : 'comments';
+    $rate = $pdo->prepare('SELECT COUNT(*) FROM ' . $table . ' WHERE ip_hash = :ip AND created > :since');
     $rate->execute([':ip' => $ipHash, ':since' => date('c', time() - 3600)]);
     if ((int) $rate->fetchColumn() >= 5) {
         out(['error' => 'Слишком много сообщений подряд. Попробуйте через час.'], 429);
@@ -151,22 +183,28 @@ try {
 
     $autoApprove = $pdo->query("SELECT value FROM settings WHERE key = 'auto_approve'")->fetchColumn();
 
-    $stmt = $pdo->prepare('INSERT INTO comments (item_id, name, text, contact, created, approved, ip_hash)
-        VALUES (:item, :name, :text, :contact, :created, :approved, :ip)');
-    $stmt->execute([
-        ':item' => $item,
+    if ($isPost) {
+        $stmt = $pdo->prepare('INSERT INTO post_comments (post_id, name, text, contact, created, approved, ip_hash)
+            VALUES (:post, :name, :text, :contact, :created, :approved, :ip)');
+    } else {
+        $stmt = $pdo->prepare('INSERT INTO comments (item_id, name, text, contact, created, approved, ip_hash)
+            VALUES (:item, :name, :text, :contact, :created, :approved, :ip)');
+    }
+    $values = [
         ':name' => $name,
         ':text' => $text,
         ':contact' => $contact,
         ':created' => date('c'),
         ':approved' => $autoApprove === '1' ? 1 : 0,
         ':ip' => $ipHash,
-    ]);
+    ];
+    $stmt->execute($values + ($isPost ? [':post' => $postId] : [':item' => $item]));
 
-    // письмо о новом вопросе — чтобы не проверять панель вручную
+    // письмо — чтобы не проверять панель вручную
     $notifyTo = defined('COMMENT_EMAIL') && COMMENT_EMAIL !== '' ? COMMENT_EMAIL : 'it@ivu.ru';
-    $subject = 'Новый вопрос на сайте' . ($autoApprove === '1' ? ' (опубликован)' : ' (ждёт проверки)');
-    $body = 'Товар №' . $item . "\n"
+    $subject = ($isPost ? 'Новый комментарий к записи' : 'Новый вопрос на сайте')
+        . ($autoApprove === '1' ? ' (опубликован)' : ' (ждёт проверки)');
+    $body = ($isPost ? 'Запись №' . $postId : 'Товар №' . $item) . "\n"
         . 'Имя: ' . $name . "\n"
         . 'Связь: ' . ($contact !== '' ? $contact : 'не указана') . "\n\n"
         . $text . "\n\n"
