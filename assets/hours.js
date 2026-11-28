@@ -50,6 +50,15 @@
       now.hour >= OPEN_HOUR && now.hour < CLOSE_HOUR;
   }
 
+  // короткая форма для пометки в карточке: «завтра», «в пн», «сегодня»
+  function shortOpening(now) {
+    var isWorkday = WORKDAYS.indexOf(now.weekday) !== -1;
+    if (isWorkday && now.hour < OPEN_HOUR) {
+      return "сегодня";
+    }
+    var names = { Mon: "во вт", Tue: "в ср", Wed: "в чт", Thu: "в пт", Fri: "в пн", Sat: "в пн", Sun: "в пн" };
+    return names[now.weekday] || "в пн";
+  }
   function nextOpening(now) {
     var isWorkday = WORKDAYS.indexOf(now.weekday) !== -1;
 
@@ -266,8 +275,9 @@
   function markClosed(now) {
     var badge = document.createElement("span");
     badge.className = "hours-badge";
-    // в выходные так и пишем, в будни вечером — «закрыто»
-    badge.textContent = WORKDAYS.indexOf(now.weekday) === -1 ? "выходной" : "закрыто";
+    // пишем не «закрыто», а когда откроемся — чтобы не читалось как «мы закрылись»
+    var prefix = WORKDAYS.indexOf(now.weekday) === -1 ? "выходной" : "закрыто";
+    badge.textContent = prefix + ", откроемся " + shortOpening(now);
 
     var label = document.querySelector(".hero-card__label");
     if (label && !label.querySelector(".hours-badge")) {
