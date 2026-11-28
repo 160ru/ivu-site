@@ -1,6 +1,20 @@
 {
-  "generated": "2026-11-28T12:50:02.363Z",
+  "generated": "2026-11-28T18:39:19.080Z",
   "items": [
+    {
+      "title": "«Что поменялось в 1С с заливки таблиц?» Простой мониторинг метаданных на Airflow и PostgreSQL",
+      "url": "https://habr.com/ru/articles/1113556/?utm_campaign=1113556&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-28",
+      "source": "Хабр · 1С",
+      "manual": false
+    },
+    {
+      "title": "Рукопожатие проходит, а данные нет: до программы доходят 16 384 байта, дальше тишина",
+      "url": "https://habr.com/ru/articles/1113584/?utm_campaign=1113584&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-28",
+      "source": "Хабр · Безопасность",
+      "manual": false
+    },
     {
       "title": "Биометрия при обработке ПДн и можно ли от нее уйти",
       "url": "https://habr.com/ru/articles/1113534/?utm_campaign=1113534&utm_source=habrahabr&utm_medium=rss",
@@ -9,15 +23,15 @@
       "manual": false
     },
     {
-      "title": "В Anthropic разработали тест‑приманку для ИИ‑агентов Siren",
-      "url": "https://habr.com/ru/articles/1113520/?utm_campaign=1113520&utm_source=habrahabr&utm_medium=rss",
+      "title": "Читаем данные с мультиметров на языке Python",
+      "url": "https://habr.com/ru/articles/1113610/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113610",
       "date": "2026-11-28",
-      "source": "Хабр · Безопасность",
+      "source": "Хабр",
       "manual": false
     },
     {
-      "title": "2051 вкладок Firefox. Я сделал расширение, чтобы наконец с ними разобраться",
-      "url": "https://habr.com/ru/articles/1113544/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113544",
+      "title": "[Перевод] Откуда берутся хорошие идеи",
+      "url": "https://habr.com/ru/articles/1068224/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1068224",
       "date": "2026-11-28",
       "source": "Хабр",
       "manual": false
@@ -25,13 +39,6 @@
     {
       "title": "Учет ГОЗ в 1С по постановлению № 874 — от первички до отчёта по партии",
       "url": "https://habr.com/ru/companies/infostart/articles/1113314/?utm_campaign=1113314&utm_source=habrahabr&utm_medium=rss",
-      "date": "2026-11-27",
-      "source": "Хабр · 1С",
-      "manual": false
-    },
-    {
-      "title": "Биржа заказов Инфостарта: кассы самообслуживания, маркировка и автоматизация бухгалтерии",
-      "url": "https://habr.com/ru/companies/infostart/articles/1113008/?utm_campaign=1113008&utm_source=habrahabr&utm_medium=rss",
       "date": "2026-11-27",
       "source": "Хабр · 1С",
       "manual": false
