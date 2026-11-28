@@ -114,6 +114,9 @@ function writeConfig(array $values, ?string $newPassword = null): bool
     $smtpPass = $values['smtp_pass'] ?? (defined('SMTP_PASS') ? SMTP_PASS : '');
     $mailTo = $values['mail_to'] ?? (defined('MAIL_TO') ? MAIL_TO : '');
 
+    $tgToken = $values['tg_token'] ?? (defined('TELEGRAM_TOKEN') ? TELEGRAM_TOKEN : '');
+    $tgChat = $values['tg_chat'] ?? (defined('TELEGRAM_CHAT_ID') ? TELEGRAM_CHAT_ID : '');
+
     $content = "<?php\n"
         . "define('ADMIN_PASSWORD_HASH', " . var_export($hash, true) . ");\n"
         . "define('YANDEX_CLIENT_ID', " . var_export(trim((string) $clientId), true) . ");\n"
@@ -122,7 +125,9 @@ function writeConfig(array $values, ?string $newPassword = null): bool
         . "define('SMTP_PORT', " . var_export((int) $smtpPort, true) . ");\n"
         . "define('SMTP_USER', " . var_export(trim((string) $smtpUser), true) . ");\n"
         . "define('SMTP_PASS', " . var_export((string) $smtpPass, true) . ");\n"
-        . "define('MAIL_TO', " . var_export(trim((string) $mailTo), true) . ");\n";
+        . "define('MAIL_TO', " . var_export(trim((string) $mailTo), true) . ");\n"
+        . "define('TELEGRAM_TOKEN', " . var_export(trim((string) $tgToken), true) . ");\n"
+        . "define('TELEGRAM_CHAT_ID', " . var_export(trim((string) $tgChat), true) . ");\n";
 
     return @file_put_contents($configFile, $content) !== false;
 }
@@ -244,7 +249,7 @@ $authorized = !empty($_SESSION['auth']);
 
 // ---------- действия только для авторизованных ----------
 if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete', 'callback-done', 'callback-delete', 'smtp'], true)) {
+    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete', 'callback-done', 'callback-delete', 'smtp', 'telegram'], true)) {
         checkCsrf();
     }
 
@@ -502,6 +507,40 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = ($smtpUser !== '' && $smtpPass !== '')
                 ? 'Почта настроена: письма пойдут через ' . $smtpHost
                 : 'Почтовые настройки очищены — письма идут стандартной отправкой';
+        } else {
+            $error = 'Не удалось записать файл настроек';
+        }
+    }
+
+    if ($action === 'telegram') {
+        require_once dirname(__DIR__) . '/notify.php';
+        $tgToken = trim((string) ($_POST['tg_token'] ?? ''));
+        $tgChat = trim((string) ($_POST['tg_chat'] ?? ''));
+        $tgError = '';
+
+        if ($tgToken !== '' && $tgChat === '') {
+            $detected = ivuTelegramDetectChat($tgToken);
+            if ($detected !== null) {
+                $tgChat = $detected;
+            } else {
+                $tgError = 'Бот не нашёл сообщений. Откройте бота в Телеграме, нажмите /start и попробуйте снова.';
+            }
+        }
+
+        if ($tgError !== '' && writeConfig(['tg_token' => $tgToken, 'tg_chat' => $tgChat])) {
+            $error = $tgError;
+        } elseif (writeConfig(['tg_token' => $tgToken, 'tg_chat' => $tgChat])) {
+            if ($tgToken !== '' && $tgChat !== '') {
+                $sent = ivuTelegramApi($tgToken, 'sendMessage', [
+                    'chat_id' => $tgChat,
+                    'text' => 'Проверка связи с сайтом ivu.ru — уведомления работают.',
+                ]);
+                $message = (is_array($sent) && !empty($sent['ok']))
+                    ? 'Сохранено. Чат ' . $tgChat . ', проверочное сообщение отправлено'
+                    : 'Токен сохранён, но отправить сообщение не удалось — проверьте чат';
+            } else {
+                $message = 'Уведомления в Телеграм выключены';
+            }
         } else {
             $error = 'Не удалось записать файл настроек';
         }
@@ -769,6 +808,29 @@ $pages = max(1, (int) ceil($total / $perPage));
     </form>
   </fieldset>
 
+  <fieldset>
+    <legend>Уведомления в Телеграм</legend>
+    <form method="post" action="/admin/" class="row2">
+      <input type="hidden" name="action" value="telegram">
+      <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+
+      <label><span>Токен бота</span>
+        <input type="text" name="tg_token" value="<?= e(defined('TELEGRAM_TOKEN') ? TELEGRAM_TOKEN : '') ?>" placeholder="1234567890:AA…">
+      </label>
+      <label><span>Чат (можно оставить пустым — определится сам)</span>
+        <input type="text" name="tg_chat" value="<?= e(defined('TELEGRAM_CHAT_ID') ? TELEGRAM_CHAT_ID : '') ?>" placeholder="определится после /start">
+      </label>
+
+      <p class="small" style="grid-column:1/-1;margin:0 0 8px">
+        Бот: @BotFather → /newbot → скопировать токен. Потом открыть своего бота и нажать <b>/start</b>,
+        а здесь — «Сохранить». Чат определится автоматически и придёт проверочное сообщение.
+      </p>
+      <p style="grid-column:1/-1;margin:0">
+        <button class="btn btn--sm" type="submit">Сохранить и проверить</button>
+        <span class="small">— заявки и вопросы будут приходить в чат</span>
+      </p>
+    </form>
+  </fieldset>
   <fieldset>
     <legend>Почта для уведомлений</legend>
     <form method="post" action="/admin/" class="row2">

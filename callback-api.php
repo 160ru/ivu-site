@@ -21,6 +21,7 @@ if (is_file($configFile)) {
     require_once $configFile;
 }
 require_once __DIR__ . '/mailer.php';
+require_once __DIR__ . '/notify.php';
 
 function out(array $payload, int $code = 200): void
 {
@@ -135,6 +136,14 @@ $body = 'Номер: ' . $phone . "\n"
     . "Список заявок: https://ivu.ru/admin/\n";
 
 ivuMail($notifyTo, $subject, $body);
+
+// сообщение в Телеграм владельцу сайта
+$tg = "📦 <b>Заявка с сайта</b>\n"
+    . 'Телефон: <b>' . htmlspecialchars($phone, ENT_QUOTES, 'UTF-8') . "</b>\n"
+    . ($note !== '' ? 'Что: ' . htmlspecialchars($note, ENT_QUOTES, 'UTF-8') . "\n" : '')
+    . ($email !== '' ? 'Почта: ' . htmlspecialchars($email, ENT_QUOTES, 'UTF-8') . "\n" : '')
+    . 'Когда: ' . date('d.m.Y H:i');
+ivuTelegram($tg);
 
 // подтверждение заказчику — если оставил почту
 if ($email !== '') {
