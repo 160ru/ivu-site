@@ -276,7 +276,7 @@
     var badge = document.createElement("span");
     badge.className = "hours-badge";
     // пишем не «закрыто», а когда откроемся — чтобы не читалось как «мы закрылись»
-    var prefix = WORKDAYS.indexOf(now.weekday) === -1 ? "выходной" : "закрыто";
+    var prefix = WORKDAYS.indexOf(now.weekday) === -1 ? "выходной день" : "закрыто";
     badge.textContent = prefix + ", откроемся " + shortOpening(now);
 
     var label = document.querySelector(".hero-card__label");
