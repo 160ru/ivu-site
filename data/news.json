@@ -1,33 +1,40 @@
 {
-    "generated":  "2026-11-28T06:58:11.233Z",
-    "items":  [
-                  {
-                      "title":  "Хакеры взломали Cloud One — флагманскую облачную платформу ВВС США",
-                      "url":  "https://habr.com/ru/articles/1113478/?utm_campaign=1113478\u0026utm_source=habrahabr\u0026utm_medium=rss",
-                      "date":  "2026-11-28",
-                      "source":  "Хабр · Безопасность",
-                      "manual":  false
-                  },
-                  {
-                      "title":  "Telegram уведомил владельцев iPhone со старым iOS о необходимости обновления ОС из-за угрозы массовых взломов",
-                      "url":  "https://habr.com/ru/articles/1113468/?utm_campaign=1113468\u0026utm_source=habrahabr\u0026utm_medium=rss",
-                      "date":  "2026-11-28",
-                      "source":  "Хабр · Безопасность",
-                      "manual":  false
-                  },
-                  {
-                      "title":  "Учет ГОЗ в 1С по постановлению № 874 — от первички до отчёта по партии",
-                      "url":  "https://habr.com/ru/companies/infostart/articles/1113314/?utm_campaign=1113314\u0026utm_source=habrahabr\u0026utm_medium=rss",
-                      "date":  "2026-11-27",
-                      "source":  "Хабр · 1С",
-                      "manual":  false
-                  },
-                  {
-                      "title":  "Биржа заказов Инфостарта: кассы самообслуживания, маркировка и автоматизация бухгалтерии",
-                      "url":  "https://habr.com/ru/companies/infostart/articles/1113008/?utm_campaign=1113008\u0026utm_source=habrahabr\u0026utm_medium=rss",
-                      "date":  "2026-11-27",
-                      "source":  "Хабр · 1С",
-                      "manual":  false
-                  }
-              ]
+  "generated": "2026-11-28T12:50:02.363Z",
+  "items": [
+    {
+      "title": "Биометрия при обработке ПДн и можно ли от нее уйти",
+      "url": "https://habr.com/ru/articles/1113534/?utm_campaign=1113534&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-28",
+      "source": "Хабр · Безопасность",
+      "manual": false
+    },
+    {
+      "title": "В Anthropic разработали тест‑приманку для ИИ‑агентов Siren",
+      "url": "https://habr.com/ru/articles/1113520/?utm_campaign=1113520&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-28",
+      "source": "Хабр · Безопасность",
+      "manual": false
+    },
+    {
+      "title": "2051 вкладок Firefox. Я сделал расширение, чтобы наконец с ними разобраться",
+      "url": "https://habr.com/ru/articles/1113544/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1113544",
+      "date": "2026-11-28",
+      "source": "Хабр",
+      "manual": false
+    },
+    {
+      "title": "Учет ГОЗ в 1С по постановлению № 874 — от первички до отчёта по партии",
+      "url": "https://habr.com/ru/companies/infostart/articles/1113314/?utm_campaign=1113314&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-27",
+      "source": "Хабр · 1С",
+      "manual": false
+    },
+    {
+      "title": "Биржа заказов Инфостарта: кассы самообслуживания, маркировка и автоматизация бухгалтерии",
+      "url": "https://habr.com/ru/companies/infostart/articles/1113008/?utm_campaign=1113008&utm_source=habrahabr&utm_medium=rss",
+      "date": "2026-11-27",
+      "source": "Хабр · 1С",
+      "manual": false
+    }
+  ]
 }
