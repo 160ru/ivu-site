@@ -266,7 +266,8 @@
   function markClosed(now) {
     var badge = document.createElement("span");
     badge.className = "hours-badge";
-    badge.textContent = "сейчас не работаем";
+    // в выходные так и пишем, в будни вечером — «закрыто»
+    badge.textContent = WORKDAYS.indexOf(now.weekday) === -1 ? "выходной" : "закрыто";
 
     var label = document.querySelector(".hero-card__label");
     if (label && !label.querySelector(".hours-badge")) {
