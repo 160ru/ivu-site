@@ -50,15 +50,6 @@
       now.hour >= OPEN_HOUR && now.hour < CLOSE_HOUR;
   }
 
-  // короткая форма для пометки в карточке: «завтра», «в пн», «сегодня»
-  function shortOpening(now) {
-    var isWorkday = WORKDAYS.indexOf(now.weekday) !== -1;
-    if (isWorkday && now.hour < OPEN_HOUR) {
-      return "сегодня";
-    }
-    var names = { Mon: "во вт", Tue: "в ср", Wed: "в чт", Thu: "в пт", Fri: "в пн", Sat: "в пн", Sun: "в пн" };
-    return names[now.weekday] || "в пн";
-  }
   function nextOpening(now) {
     var isWorkday = WORKDAYS.indexOf(now.weekday) !== -1;
 
@@ -95,7 +86,7 @@
     var title = document.createElement("h2");
     title.className = "modal__title";
     title.id = "hours-modal-title";
-    title.textContent = "Сейчас нерабочее время";
+    title.textContent = "Нерабочее время офиса";
     panel.appendChild(title);
 
     var text = document.createElement("p");
@@ -275,9 +266,9 @@
   function markClosed(now) {
     var badge = document.createElement("span");
     badge.className = "hours-badge";
-    // пишем не «закрыто», а когда откроемся — чтобы не читалось как «мы закрылись»
-    var prefix = WORKDAYS.indexOf(now.weekday) === -1 ? "выходной день" : "закрыто";
-    badge.textContent = prefix + ", откроемся " + shortOpening(now);
+    // одна формулировка и в выходной, и вечером: речь про часы работы офиса,
+    // а не про то, что компания закрылась
+    badge.textContent = "нерабочее время офиса";
 
     var label = document.querySelector(".hero-card__label");
     if (label && !label.querySelector(".hours-badge")) {
