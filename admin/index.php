@@ -116,6 +116,8 @@ function writeConfig(array $values, ?string $newPassword = null): bool
 
     $tgToken = $values['tg_token'] ?? (defined('TELEGRAM_TOKEN') ? TELEGRAM_TOKEN : '');
     $tgChat = $values['tg_chat'] ?? (defined('TELEGRAM_CHAT_ID') ? TELEGRAM_CHAT_ID : '');
+    $captchaClient = $values['captcha_client'] ?? (defined('SMARTCAPTCHA_CLIENT_KEY') ? SMARTCAPTCHA_CLIENT_KEY : '');
+    $captchaServer = $values['captcha_server'] ?? (defined('SMARTCAPTCHA_SERVER_KEY') ? SMARTCAPTCHA_SERVER_KEY : '');
 
     $content = "<?php\n"
         . "define('ADMIN_PASSWORD_HASH', " . var_export($hash, true) . ");\n"
@@ -126,6 +128,8 @@ function writeConfig(array $values, ?string $newPassword = null): bool
         . "define('SMTP_USER', " . var_export(trim((string) $smtpUser), true) . ");\n"
         . "define('SMTP_PASS', " . var_export((string) $smtpPass, true) . ");\n"
         . "define('MAIL_TO', " . var_export(trim((string) $mailTo), true) . ");\n"
+        . "define('SMARTCAPTCHA_CLIENT_KEY', " . var_export(trim((string) $captchaClient), true) . ");\n"
+        . "define('SMARTCAPTCHA_SERVER_KEY', " . var_export(trim((string) $captchaServer), true) . ");\n"
         . "define('TELEGRAM_TOKEN', " . var_export(trim((string) $tgToken), true) . ");\n"
         . "define('TELEGRAM_CHAT_ID', " . var_export(trim((string) $tgChat), true) . ");\n";
 
@@ -249,7 +253,7 @@ $authorized = !empty($_SESSION['auth']);
 
 // ---------- действия только для авторизованных ----------
 if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete', 'callback-done', 'callback-delete', 'smtp', 'telegram'], true)) {
+    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete', 'callback-done', 'callback-delete', 'smtp', 'telegram', 'captcha'], true)) {
         checkCsrf();
     }
 
@@ -546,6 +550,19 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($action === 'captcha') {
+        $captchaClient = trim((string) ($_POST['captcha_client'] ?? ''));
+        $captchaServer = trim((string) ($_POST['captcha_server'] ?? ''));
+
+        if (writeConfig(['captcha_client' => $captchaClient, 'captcha_server' => $captchaServer])) {
+            $message = ($captchaClient !== '' && $captchaServer !== '')
+                ? 'Капча включена: без неё заявка не отправится'
+                : 'Капча выключена — работают встроенные проверки';
+        } else {
+            $error = 'Не удалось записать файл настроек';
+        }
+    }
+
     if ($action === 'callback-done') {
         $cbId = (int) ($_POST['callback_id'] ?? 0);
         if ($cbId > 0) {
@@ -808,6 +825,26 @@ $pages = max(1, (int) ceil($total / $perPage));
     </form>
   </fieldset>
 
+  <fieldset>
+    <legend>Защита форм от ботов</legend>
+    <form method="post" action="/admin/" class="row2">
+      <input type="hidden" name="action" value="captcha">
+      <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+      <label><span>Ключ клиента (SmartCaptcha)</span>
+        <input type="text" name="captcha_client" value="<?= e(defined('SMARTCAPTCHA_CLIENT_KEY') ? SMARTCAPTCHA_CLIENT_KEY : '') ?>">
+      </label>
+      <label><span>Ключ сервера</span>
+        <input type="text" name="captcha_server" value="<?= e(defined('SMARTCAPTCHA_SERVER_KEY') ? SMARTCAPTCHA_SERVER_KEY : '') ?>">
+      </label>
+      <p class="small" style="grid-column:1/-1;margin:0 0 8px">
+        Ключи выдаются в Яндекс Облаке: «SmartCaptcha» → создать капчу → домен <code>ivu.ru</code>.
+        Без ключей работают встроенные проверки: метка формы, отсев выдуманных номеров, лимиты.
+      </p>
+      <p style="grid-column:1/-1;margin:0">
+        <button class="btn btn--sm" type="submit">Сохранить</button>
+      </p>
+    </form>
+  </fieldset>
   <fieldset>
     <legend>Уведомления в Телеграм</legend>
     <form method="post" action="/admin/" class="row2">

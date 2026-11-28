@@ -61,8 +61,82 @@ if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 $name = cleanText((string) ($data['name'] ?? ''), 60);
 
 $digits = preg_replace('/\D+/', '', $phone) ?? '';
-if (strlen($digits) < 10 || strlen($digits) > 15) {
-    out(['error' => 'Проверьте номер: нужно не меньше 10 цифр'], 400);
+
+/** Похож ли номер на настоящий российский. */
+function looksRealPhone(string $digits): bool
+{
+    $length = strlen($digits);
+
+    if ($length === 11 && ($digits[0] === '7' || $digits[0] === '8')) {
+        $national = substr($digits, 1);
+    } elseif ($length === 10) {
+        $national = $digits;
+    } else {
+        return false;
+    }
+
+    // все цифры одинаковые: 0000000000, 1111111111
+    if (count(array_unique(str_split($national))) === 1) {
+        return false;
+    }
+
+    // подряд идущие: 1234567890, 9876543210
+    $ascending = '0123456789';
+    $descending = '9876543210';
+    if (strpos($ascending, $national) !== false || strpos($descending, $national) !== false) {
+        return false;
+    }
+
+    // код оператора не начинается с 0 или 1
+    if ($national[0] === '0' || $national[0] === '1') {
+        return false;
+    }
+
+    return true;
+}
+
+if (!looksRealPhone($digits)) {
+    out(['error' => 'Проверьте номер телефона — такого не бывает'], 400);
+}
+
+// метка формы: должна быть подписана нашим секретом и не старше двух часов
+$tokenTs = (int) ($data['ts'] ?? 0);
+$tokenSig = (string) ($data['sig'] ?? '');
+$secret = defined('ADMIN_PASSWORD_HASH') ? (string) ADMIN_PASSWORD_HASH : 'ivu-site-form';
+$expected = hash_hmac('sha256', (string) $tokenTs, $secret);
+
+if ($tokenTs <= 0 || $tokenSig === '' || !hash_equals($expected, $tokenSig)) {
+    out(['error' => 'Обновите страницу и попробуйте снова'], 400);
+}
+if (time() - $tokenTs < 2 || time() - $tokenTs > 7200) {
+    out(['error' => 'Форма устарела, обновите страницу'], 400);
+}
+
+// капча Яндекс SmartCaptcha — если настроены ключи
+if (defined('SMARTCAPTCHA_SERVER_KEY') && SMARTCAPTCHA_SERVER_KEY !== '') {
+    $captcha = (string) ($data['captcha'] ?? '');
+    $ch = curl_init('https://smartcaptcha.yandexcloud.net/validate');
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => http_build_query([
+            'secret' => (string) SMARTCAPTCHA_SERVER_KEY,
+            'token' => $captcha,
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ]),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 12,
+    ]);
+    $answer = json_decode((string) curl_exec($ch), true);
+    curl_close($ch);
+
+    if (!is_array($answer) || empty($answer['status']) || $answer['status'] !== 'ok') {
+        out(['error' => 'Подтвердите, что вы не робот, и попробуйте снова'], 400);
+    }
+}
+
+// ссылки в заявке — почти всегда реклама
+if (preg_match('~(https?://|www\.|\.ru/|\.com)~iu', $note . ' ' . $name)) {
+    out(['ok' => true]);
 }
 
 try {
@@ -105,6 +179,13 @@ try {
     }
 
     $ipHash = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . 'ivu-callback');
+
+    // общий предохранитель от массовой рассылки
+    $total = $pdo->prepare('SELECT COUNT(*) FROM callbacks WHERE created > :since');
+    $total->execute([':since' => date('c', time() - 3600)]);
+    if ((int) $total->fetchColumn() >= 40) {
+        out(['ok' => true]);
+    }
 
     $rate = $pdo->prepare('SELECT COUNT(*) FROM callbacks WHERE ip_hash = :ip AND created > :since');
     $rate->execute([':ip' => $ipHash, ':since' => date('c', time() - 3600)]);

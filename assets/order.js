@@ -13,6 +13,16 @@
   var PHONE = "+7 4932 353070";
   var modal = null;
   var productName = "";
+  var formToken = null;
+
+  // метка формы: защита от ботов, которые шлют запросы напрямую
+  function loadToken() {
+    return fetch("/form-token.php", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (data) { formToken = data; return data; })
+      .catch(function () { return null; });
+  }
+  loadToken();
 
   function money(value) {
     if (!value) {
@@ -131,6 +141,8 @@
         body: JSON.stringify({
           phone: phone,
           email: emailInput.value.trim(),
+          ts: formToken ? formToken.ts : 0,
+          sig: formToken ? formToken.sig : "",
           note: productName ? "Заказ: " + productName : "Заказ с сайта",
           hp: hp.value
         })

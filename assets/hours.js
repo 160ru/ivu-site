@@ -64,6 +64,12 @@
   // ---------- окно ----------
   var modal = null;
   var openingText = "";
+  var formToken = null;
+
+  fetch("/form-token.php", { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (data) { formToken = data; })
+    .catch(function () {});
 
   function buildModal() {
     var wrap = document.createElement("div");
@@ -186,7 +192,12 @@
       fetch("/callback-api.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phone, hp: hp.value })
+        body: JSON.stringify({
+          phone: phone,
+          hp: hp.value,
+          ts: formToken ? formToken.ts : 0,
+          sig: formToken ? formToken.sig : ""
+        })
       })
         .then(function (response) { return response.json(); })
         .then(function (result) {
