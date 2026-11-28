@@ -1858,3 +1858,13 @@ body > main { flex: 1 0 auto; }
 @media (max-width: 480px) {
   .hours-modal__actions .btn { width: 100%; }
 }
+.hours-modal__note {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--blue);
+  background: var(--blue-soft);
+  border-radius: 0 6px 6px 0;
+  font-size: .88rem;
+  line-height: 1.5;
+  color: var(--ink);
+}

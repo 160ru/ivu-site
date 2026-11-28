@@ -97,6 +97,10 @@
     hours.textContent = "Работаем по будням с 11:00 до 18:00, суббота и воскресенье — выходные.";
     panel.appendChild(hours);
 
+    var note = document.createElement("p");
+    note.className = "hours-modal__note";
+    panel.appendChild(note);
+
     var actions = document.createElement("div");
     actions.className = "hours-modal__actions";
 
@@ -130,7 +134,7 @@
     });
 
     document.body.appendChild(wrap);
-    return { wrap: wrap, text: text, previous: null };
+    return { wrap: wrap, text: text, note: note, previous: null };
   }
 
   function show(phoneHref) {
@@ -138,9 +142,10 @@
       modal = buildModal();
     }
     var now = msk();
-    modal.text.textContent = "Сейчас " + now.time + " — офис закрыт. " +
-      "Откроемся " + nextOpening(now) + ". Пока можно написать в чат — " +
-      "ответим, как только начнём работу.";
+    var when = nextOpening(now);
+    modal.text.textContent = "Сейчас " + now.time + " — офис закрыт. Откроемся " + when + ".";
+    modal.note.textContent = "В чате ответим " + when + ". Если вопрос срочный — " +
+      "оставьте в сообщении номер телефона, перезвоним первым делом.";
     if (phoneHref) {
       modal.previous = phoneHref;
     }
