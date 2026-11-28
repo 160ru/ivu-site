@@ -91,7 +91,11 @@
 
     var meta = el("p", "product__meta");
     if (item.condition) meta.appendChild(el("span", "product__badge", item.condition));
-    if (item.date) meta.appendChild(el("span", "product__date", item.date));
+
+    var stock = item.sold ? "продано" : (item.date || "");
+    if (stock) {
+      meta.appendChild(el("span", "product__stock" + (item.sold ? " product__stock--sold" : ""), stock));
+    }
     if (meta.childNodes.length) body.appendChild(meta);
 
     var titleNode = el("h2", "product__title");

@@ -1799,3 +1799,12 @@ body > main { flex: 1 0 auto; }
 @media (max-width: 560px) {
   .footer-grid { grid-template-columns: 1fr; }
 }
+/* Плашки: тип товара — синяя, наличие — нейтральная, продано — тёмная */
+.product__stock {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink-soft);
+  letter-spacing: .06em;
+}
+.product__stock--sold { background: var(--ink); color: #fff; }
