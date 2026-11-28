@@ -1808,3 +1808,29 @@ body > main { flex: 1 0 auto; }
   letter-spacing: .06em;
 }
 .product__stock--sold { background: var(--ink); color: #fff; }
+/* Карточка контактов на первом экране ведёт к разделу «Контакты» */
+.hero-card { position: relative; transition: border-color .18s ease, box-shadow .18s ease; }
+.hero-card:hover { border-color: var(--blue); }
+
+.hero-card__stretch {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+}
+.hero-card__stretch:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+/* всё, что должно оставаться кликабельным, — выше растянутой ссылки */
+.hero-card__row,
+.hero-card .phone-group { position: relative; z-index: 1; }
+
+.hero-card__label { transition: color .18s ease; }
+.hero-card:hover .hero-card__label { color: var(--blue); }
+.hero-card__arrow {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--blue);
+  transform: translateX(0);
+  transition: transform .18s ease;
+}
+.hero-card:hover .hero-card__arrow { transform: translateX(3px); }
