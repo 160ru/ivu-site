@@ -1893,3 +1893,10 @@ body > main { flex: 1 0 auto; }
 @media (max-width: 480px) {
   .hours-form__row .btn { width: 100%; }
 }
+/* Описание в карточке — не больше четырёх строк, целиком — на странице товара */
+.product__desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
