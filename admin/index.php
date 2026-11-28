@@ -108,10 +108,21 @@ function writeConfig(array $values, ?string $newPassword = null): bool
     $clientId = $values['yandex_id'] ?? (defined('YANDEX_CLIENT_ID') ? YANDEX_CLIENT_ID : '');
     $clientSecret = $values['yandex_secret'] ?? (defined('YANDEX_CLIENT_SECRET') ? YANDEX_CLIENT_SECRET : '');
 
+    $smtpHost = $values['smtp_host'] ?? (defined('SMTP_HOST') ? SMTP_HOST : '');
+    $smtpPort = $values['smtp_port'] ?? (defined('SMTP_PORT') ? SMTP_PORT : '465');
+    $smtpUser = $values['smtp_user'] ?? (defined('SMTP_USER') ? SMTP_USER : '');
+    $smtpPass = $values['smtp_pass'] ?? (defined('SMTP_PASS') ? SMTP_PASS : '');
+    $mailTo = $values['mail_to'] ?? (defined('MAIL_TO') ? MAIL_TO : '');
+
     $content = "<?php\n"
         . "define('ADMIN_PASSWORD_HASH', " . var_export($hash, true) . ");\n"
         . "define('YANDEX_CLIENT_ID', " . var_export(trim((string) $clientId), true) . ");\n"
-        . "define('YANDEX_CLIENT_SECRET', " . var_export(trim((string) $clientSecret), true) . ");\n";
+        . "define('YANDEX_CLIENT_SECRET', " . var_export(trim((string) $clientSecret), true) . ");\n"
+        . "define('SMTP_HOST', " . var_export(trim((string) $smtpHost), true) . ");\n"
+        . "define('SMTP_PORT', " . var_export((int) $smtpPort, true) . ");\n"
+        . "define('SMTP_USER', " . var_export(trim((string) $smtpUser), true) . ");\n"
+        . "define('SMTP_PASS', " . var_export((string) $smtpPass, true) . ");\n"
+        . "define('MAIL_TO', " . var_export(trim((string) $mailTo), true) . ");\n";
 
     return @file_put_contents($configFile, $content) !== false;
 }
@@ -233,7 +244,7 @@ $authorized = !empty($_SESSION['auth']);
 
 // ---------- действия только для авторизованных ----------
 if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete', 'callback-done', 'callback-delete'], true)) {
+    if (in_array($action, ['save', 'delete', 'sold', 'photo-delete', 'comment-approve', 'comment-delete', 'auto-approve', 'post-save', 'post-delete', 'post-publish', 'pcomment-approve', 'pcomment-delete', 'callback-done', 'callback-delete', 'smtp'], true)) {
         checkCsrf();
     }
 
@@ -471,6 +482,28 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($cid > 0) {
             db()->prepare('DELETE FROM post_comments WHERE id = :id')->execute([':id' => $cid]);
             $message = 'Комментарий удалён';
+        }
+    }
+
+    if ($action === 'smtp') {
+        $smtpHost = trim((string) ($_POST['smtp_host'] ?? ''));
+        $smtpPort = (int) ($_POST['smtp_port'] ?? 465);
+        $smtpUser = trim((string) ($_POST['smtp_user'] ?? ''));
+        $smtpPass = (string) ($_POST['smtp_pass'] ?? '');
+        $mailTo = trim((string) ($_POST['mail_to'] ?? ''));
+
+        if (writeConfig([
+            'smtp_host' => $smtpHost,
+            'smtp_port' => $smtpPort > 0 ? $smtpPort : 465,
+            'smtp_user' => $smtpUser,
+            'smtp_pass' => $smtpPass,
+            'mail_to' => $mailTo,
+        ])) {
+            $message = ($smtpUser !== '' && $smtpPass !== '')
+                ? 'Почта настроена: письма пойдут через ' . $smtpHost
+                : 'Почтовые настройки очищены — письма идут стандартной отправкой';
+        } else {
+            $error = 'Не удалось записать файл настроек';
         }
     }
 
@@ -736,6 +769,38 @@ $pages = max(1, (int) ceil($total / $perPage));
     </form>
   </fieldset>
 
+  <fieldset>
+    <legend>Почта для уведомлений</legend>
+    <form method="post" action="/admin/" class="row2">
+      <input type="hidden" name="action" value="smtp">
+      <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+
+      <label><span>SMTP-сервер</span>
+        <input type="text" name="smtp_host" value="<?= e(defined('SMTP_HOST') ? SMTP_HOST : 'smtp.yandex.ru') ?>" placeholder="smtp.yandex.ru">
+      </label>
+      <label><span>Порт</span>
+        <input type="text" name="smtp_port" value="<?= e(defined('SMTP_PORT') ? (string) SMTP_PORT : '465') ?>">
+      </label>
+      <label><span>Логин (полный адрес)</span>
+        <input type="text" name="smtp_user" value="<?= e(defined('SMTP_USER') ? SMTP_USER : '') ?>" placeholder="it@ivu.ru">
+      </label>
+      <label><span>Пароль приложения</span>
+        <input type="password" name="smtp_pass" value="<?= e(defined('SMTP_PASS') ? SMTP_PASS : '') ?>" autocomplete="new-password">
+      </label>
+      <label><span>Кому присылать заявки</span>
+        <input type="text" name="mail_to" value="<?= e(defined('MAIL_TO') && MAIL_TO !== '' ? MAIL_TO : 'it@ivu.ru') ?>">
+      </label>
+
+      <p class="small" style="grid-column:1/-1;margin:0 0 8px">
+        Пароль приложения создаётся в Яндекс ID: «Безопасность» → «Пароли приложений» → «Почта».
+        Обычный пароль от ящика не подойдёт.
+      </p>
+      <p style="grid-column:1/-1;margin:0">
+        <button class="btn btn--sm" type="submit">Сохранить почту</button>
+        <span class="small">— пока пусто, письма идут стандартной отправкой сервера</span>
+      </p>
+    </form>
+  </fieldset>
   <fieldset>
     <legend>Вход через Яндекс — вопросы от авторизованных</legend>
     <form method="post" action="/admin/" class="row2">

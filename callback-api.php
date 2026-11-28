@@ -20,6 +20,7 @@ $configFile = $base . '/data/config.php';
 if (is_file($configFile)) {
     require_once $configFile;
 }
+require_once __DIR__ . '/mailer.php';
 
 function out(array $payload, int $code = 200): void
 {
@@ -116,11 +117,6 @@ $body = 'Номер: ' . $phone . "\n"
     . "Источник: всплывающее окно «нерабочее время»\n\n"
     . "Список заявок: https://ivu.ru/admin/\n";
 
-@mail(
-    $notifyTo,
-    '=?UTF-8?B?' . base64_encode($subject) . '?=',
-    $body,
-    "From: ivu.ru <no-reply@ivu.ru>\r\nContent-Type: text/plain; charset=UTF-8\r\n"
-);
+ivuMail($notifyTo, $subject, $body);
 
 out(['ok' => true]);

@@ -23,6 +23,7 @@ session_start();
 if (is_file($configFile)) {
     require_once $configFile;
 }
+require_once __DIR__ . '/mailer.php';
 $yandexReady = defined('YANDEX_CLIENT_ID') && YANDEX_CLIENT_ID !== ''
     && defined('YANDEX_CLIENT_SECRET') && YANDEX_CLIENT_SECRET !== '';
 $loggedUser = isset($_SESSION['yandex']) && is_array($_SESSION['yandex']) ? $_SESSION['yandex'] : null;
@@ -209,12 +210,7 @@ try {
         . 'Связь: ' . ($contact !== '' ? $contact : 'не указана') . "\n\n"
         . $text . "\n\n"
         . "Панель: https://ivu.ru/admin/\n";
-    @mail(
-        $notifyTo,
-        '=?UTF-8?B?' . base64_encode($subject) . '?=',
-        $body,
-        "From: ivu.ru <no-reply@ivu.ru>\r\nContent-Type: text/plain; charset=UTF-8\r\n"
-    );
+    ivuMail($notifyTo, $subject, $body);
 
     out(['ok' => true, 'moderated' => $autoApprove !== '1']);
 } catch (Throwable $error) {
