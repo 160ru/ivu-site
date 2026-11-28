@@ -15,7 +15,6 @@ session_start();
 $base = dirname(__DIR__);
 $dbFile = $base . '/data/catalog.db';
 $uploadUrl = '/uploads/blog/';
-$uploadDir = __DIR__ . '/uploads/blog';
 $configFile = $base . '/data/config.php';
 
 if (is_file($configFile)) {

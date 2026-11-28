@@ -111,13 +111,13 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
   "name": <?= json_encode($item['title'], JSON_UNESCAPED_UNICODE) ?>,
   "description": <?= json_encode($pageDescription, JSON_UNESCAPED_UNICODE) ?>,
   <?php if ($photos): ?>"image": <?= json_encode('https://ivu.ru' . $uploadUrl . $photos[0], JSON_UNESCAPED_UNICODE) ?>,<?php endif; ?>
-  "offers": {
+  <?php if ((int) $item['price'] > 0): ?>"offers": {
     "@type": "Offer",
     "price": <?= (int) $item['price'] ?>,
     "priceCurrency": "RUB",
     "availability": <?= (int) $item['sold'] === 1 ? '"https://schema.org/SoldOut"' : '"https://schema.org/InStock"' ?>,
     "seller": { "@type": "Organization", "name": "ООО «Интер-Техника-Плюс»" }
-  }
+  },<?php endif; ?>
 }
 </script>
 <?php endif; ?>

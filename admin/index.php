@@ -38,6 +38,7 @@ function db(): PDO
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             category TEXT NOT NULL DEFAULT "new",
             title TEXT NOT NULL,
+            search_text TEXT DEFAULT "",
             price INTEGER NOT NULL DEFAULT 0,
             condition TEXT DEFAULT "",
             shown_date TEXT DEFAULT "",
