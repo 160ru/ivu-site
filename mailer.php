@@ -24,27 +24,22 @@ function ivuMail(string $to, string $subject, string $body): bool
 
     $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 
-    if (defined('SMTP_HOST') && SMTP_HOST !== '' && defined('SMTP_USER') && SMTP_USER !== '') {
-        $sent = ivuSmtpSend(
-            (string) SMTP_HOST,
-            defined('SMTP_PORT') ? (int) SMTP_PORT : 465,
-            (string) SMTP_USER,
-            defined('SMTP_PASS') ? (string) SMTP_PASS : '',
-            $to,
-            $encodedSubject,
-            $body
-        );
-        if ($sent) {
-            return true;
-        }
-        // не получилось — пробуем обычной почтой, вдруг сработает
+    // Без SMTP письма не отправляем совсем.
+    // Почему: домен на Яндексе, SPF/DKIM нет — письма с сервера Бегета
+    // приходят как спам (или не приходят вовсе), только мусорят ящик.
+    // Пока SMTP не настроен, уведомления идут в панель и в Телеграм.
+    if (!defined('SMTP_HOST') || SMTP_HOST === '' || !defined('SMTP_USER') || SMTP_USER === '') {
+        return false;
     }
 
-    return @mail(
+    return ivuSmtpSend(
+        (string) SMTP_HOST,
+        defined('SMTP_PORT') ? (int) SMTP_PORT : 465,
+        (string) SMTP_USER,
+        defined('SMTP_PASS') ? (string) SMTP_PASS : '',
         $to,
         $encodedSubject,
-        $body,
-        "From: ivu.ru <no-reply@ivu.ru>\r\nContent-Type: text/plain; charset=UTF-8\r\n"
+        $body
     );
 }
 
