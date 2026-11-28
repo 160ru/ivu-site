@@ -93,6 +93,11 @@ if (is_file($dbFile)) {
 
 $slug = trim((string) ($_GET['slug'] ?? ''));
 
+if ($slug !== '' && strpos((string) ($_SERVER['REQUEST_URI'] ?? ''), 'blog.php') !== false) {
+    header('Location: https://ivu.ru/blog/' . $slug, true, 301);
+    exit;
+}
+
 if ($pdo !== null) {
     if ($slug !== '') {
         $stmt = $pdo->prepare('SELECT * FROM posts WHERE slug = :slug AND published = 1');
@@ -163,13 +168,11 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <meta property="og:url" content="<?= e($canonical) ?>">
 <meta property="og:image" content="<?= e($ogImage) ?>">
 <meta name="twitter:card" content="summary_large_image">
-<?php if ($post !== null): ?>
 <link rel="alternate" type="application/rss+xml" title="Блог Интер-Техника-Плюс" href="https://ivu.ru/blog/rss.xml">
-<?php endif; ?>
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="stylesheet" href="/assets/style.css?v=20261163">
+<link rel="stylesheet" href="/assets/style.css?v=20261164">
 <?php if ($post !== null): ?>
 <script type="application/ld+json">
 {
@@ -184,13 +187,24 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
   <?php if ((string) $post['cover'] !== ''): ?>, "image": <?= json_encode($ogImage, JSON_UNESCAPED_UNICODE) ?><?php endif; ?>
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://ivu.ru/" },
+    { "@type": "ListItem", "position": 2, "name": "Блог", "item": "https://ivu.ru/blog/" },
+    { "@type": "ListItem", "position": 3, "name": <?= json_encode($post['title'], JSON_UNESCAPED_UNICODE) ?> }
+  ]
+}
+</script>
 <?php endif; ?>
 </head>
 <body>
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/index.html" aria-label="Интер-Техника-Плюс — на главную">
-      <img class="brand-logo" src="/assets/logo.png?v=20261163" alt="Интер-Техника-Плюс" width="112" height="44">
+      <img class="brand-logo" src="/assets/logo.png?v=20261164" alt="Интер-Техника-Плюс" width="112" height="44">
       <span class="brand-name">Интер-Техника<span class="brand-plus">+</span></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
@@ -383,6 +397,6 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     </div>
   </div>
 </footer>
-<script src="/assets/app.js?v=20261163" defer></script>
+<script src="/assets/app.js?v=20261164" defer></script>
 </body>
 </html>

@@ -24,6 +24,12 @@ $loggedUser = isset($_SESSION['yandex']) && is_array($_SESSION['yandex']) ? $_SE
 
 $id = (int) ($_GET['id'] ?? 0);
 
+// прямой вызов tovar.php?id=1 — на человеческий адрес, чтобы не было дублей
+if (strpos((string) ($_SERVER['REQUEST_URI'] ?? ''), 'tovar.php') !== false && $id > 0) {
+    header('Location: https://ivu.ru/tovar/' . $id, true, 301);
+    exit;
+}
+
 function e(string $text): string
 {
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
@@ -102,7 +108,7 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="stylesheet" href="/assets/style.css?v=20261163">
+<link rel="stylesheet" href="/assets/style.css?v=20261164">
 <?php if (!$notFound): ?>
 <script type="application/ld+json">
 {
@@ -126,7 +132,7 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/index.html" aria-label="Интер-Техника-Плюс — на главную">
-      <img class="brand-logo" src="/assets/logo.png?v=20261163" alt="Интер-Техника-Плюс" width="112" height="44">
+      <img class="brand-logo" src="/assets/logo.png?v=20261164" alt="Интер-Техника-Плюс" width="112" height="44">
       <span class="brand-name">Интер-Техника<span class="brand-plus">+</span></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
@@ -304,6 +310,17 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
     });
   })();
   </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://ivu.ru/" },
+    { "@type": "ListItem", "position": 2, "name": <?= json_encode($item['category'] === 'used' ? 'Барахолка' : 'Новая техника', JSON_UNESCAPED_UNICODE) ?>, "item": "https://ivu.ru/<?= $item['category'] === 'used' ? 'used' : 'new' ?>.html" },
+    { "@type": "ListItem", "position": 3, "name": <?= json_encode($item['title'], JSON_UNESCAPED_UNICODE) ?> }
+  ]
+}
+</script>
 <?php endif; ?>
 </main>
 
@@ -335,6 +352,6 @@ $ogImage = $photos ? 'https://ivu.ru' . $uploadUrl . $photos[0] : 'https://ivu.r
     </div>
   </div>
 </footer>
-<script src="/assets/app.js?v=20261163" defer></script>
+<script src="/assets/app.js?v=20261164" defer></script>
 </body>
 </html>

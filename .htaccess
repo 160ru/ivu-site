@@ -68,9 +68,9 @@ ErrorDocument 404 /404.html
 
 # Заголовки безопасности
 <IfModule mod_headers.c>
-  <If "%{REQUEST_URI} =~ m#^/admin/#">
-    Header set X-Robots-Tag "noindex, nofollow"
-  </If>
+  # панель не индексируется (SetEnvIf работает на любом Apache 2.4)
+  SetEnvIf Request_URI "^/admin/" NOINDEX_ADMIN
+  Header set X-Robots-Tag "noindex, nofollow" env=NOINDEX_ADMIN
 
   # HSTS: браузер год не будет обращаться к сайту по http
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
