@@ -71,9 +71,9 @@
 
   --blue: #3060a0;        /* синий из логотипа */
   --blue-dark: #24487a;
-  --blue-soft: #e8eef8;
+  --blue-soft: #e6edf6;
   --red: #e8552f;         /* красно-оранжевый из логотипа — для графики */
-  --red-dark: #c8431f;
+  --red-dark: #b8360f;
   --red-text: #c9421a;    /* тот же тон, но контраст 4,9:1 — для мелкого текста */
 
   /* Типографика */
@@ -248,6 +248,7 @@ p:last-child { margin-bottom: 0; }
   text-decoration: none;
   position: relative;
   padding-block: 4px;
+  white-space: nowrap;
 }
 .nav > a:not(.btn)::after {
   content: "";
@@ -707,7 +708,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 .footer-inner p { margin: 0; }
-.footer-inner a { color: #e6edf6; text-decoration: none; border-bottom: 1px solid rgba(230, 237, 246, .3); }
+.footer-inner a { color: var(--blue-soft); text-decoration: none; border-bottom: 1px solid rgba(230, 237, 246, .3); }
 .footer-inner a:hover { color: #fff; border-color: #fff; }
 
 .footer-inner > nav { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 18px; }
@@ -1349,17 +1350,7 @@ a.news-item__title:hover { color: var(--blue); border-color: var(--blue); }
 /* Короткие страницы: подвал прижимается к низу окна */
 body > main { flex: 1 0 auto; }
 /* Витрина: поиск, галерея, «показать ещё» */
-.catalog-search { margin: 0 0 clamp(18px, 2.4vw, 26px); }
-.catalog-search input {
-  width: 100%;
-  max-width: 420px;
-  padding: 11px 14px;
-  font: inherit;
-  color: var(--ink);
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-}
+
 .catalog-status { margin: 18px 0 0; font-size: .85rem; color: var(--ink-soft); }
 .catalog-more { margin: 18px 0 0; }
 
@@ -1617,47 +1608,62 @@ body > main { flex: 1 0 auto; }
 .product__title a { color: inherit; text-decoration: none; }
 .product__title a:hover { color: var(--blue); }
 /* Фильтры витрины */
-.catalog-filters { margin: 0 0 16px; }
+.catalog-filters { margin: 0 0 clamp(18px, 2.4vw, 26px); }
 .catalog-filters__row {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 12px 16px;
+  gap: 12px 14px;
 }
-.catalog-filters__field { display: flex; flex-direction: column; gap: 5px; font-size: .82rem; color: var(--ink-soft); }
-.catalog-filters__field input, .catalog-filters__field select {
-  width: 120px;
-  padding: 9px 11px;
+.catalog-filters__field,
+.catalog-filters__search { display: flex; flex-direction: column; gap: 5px; font-size: .78rem; color: var(--ink-soft); }
+
+.catalog-filters__search { flex: 1 1 260px; min-width: 200px; }
+.catalog-filters__search input { width: 100%; }
+
+.catalog-filters__field input,
+.catalog-filters__field select,
+.catalog-filters__search input {
+  height: 40px;
+  padding: 0 11px;
   font: inherit;
+  font-size: .92rem;
   color: var(--ink);
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: 6px;
 }
-.catalog-filters__field select { width: auto; min-width: 170px; }
+.catalog-filters__field select { padding-right: 28px; min-width: 168px; }
+
+.catalog-filters__price { display: inline-flex; align-items: center; gap: 6px; }
+.catalog-filters__price input { width: 84px; }
+.catalog-filters__dash { color: var(--line); }
+
 .catalog-filters__check {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  height: 40px;
   font-size: .85rem;
   color: var(--ink-soft);
-  padding-bottom: 9px;
 }
+
 .catalog-filters__reset {
+  height: 40px;
   margin-left: auto;
-  padding: 9px 14px;
+  padding: 0 14px;
   font: inherit;
   font-size: .85rem;
   color: var(--blue);
-  background: none;
+  background: var(--white);
   border: 1px solid var(--line);
   border-radius: 6px;
   cursor: pointer;
 }
 .catalog-filters__reset:hover { border-color: var(--blue); }
 
-@media (max-width: 640px) {
-  .catalog-filters__field input { width: 100px; }
+@media (max-width: 720px) {
+  .catalog-filters__search { flex-basis: 100%; }
   .catalog-filters__reset { margin-left: 0; }
 }
 /* ---------- Блог ---------- */
@@ -1715,3 +1721,81 @@ body > main { flex: 1 0 auto; }
 .post__back { margin-top: 32px; }
 
 .blog__rss { margin-top: 32px; font-size: .88rem; }
+/* Вторичные ссылки в карточке товара */
+.product__secondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin: 10px 0 0;
+  font-size: .85rem;
+}
+.product__secondary .product__questions { margin: 0; }
+.product__link {
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.product__link:hover { color: var(--blue); border-bottom-color: currentColor; }
+
+/* Шапка: не даём меню наезжать на логотип на средних экранах */
+.brand { flex: 0 0 auto; }
+.nav { margin-left: auto; flex-wrap: nowrap; }
+
+@media (max-width: 1580px) {
+  .nav > .nav__legal { display: none; }
+}
+
+@media (max-width: 1380px) {
+  .nav .btn { display: none; }
+}
+
+@media (max-width: 1200px) {
+  .nav .btn { display: inline-flex; }
+  .nav > .nav__legal { display: inline; }
+}
+/* Ритм страницы: главное дышит свободнее, служебное — плотнее */
+.section { padding-block: clamp(36px, 4.6vw, 66px); }
+.cta { padding-block: clamp(52px, 6vw, 78px); }
+.hero { padding-block: clamp(40px, 5vw, 74px) clamp(30px, 3.4vw, 46px); }
+
+/* Логотипы партнёров: выравниваем по площади, а не по высоте */
+.partner img {
+  max-height: 40px;
+  max-width: 122px;
+  object-fit: contain;
+  filter: none;
+  opacity: .9;
+  transition: opacity .18s ease;
+}
+.partner:hover img { opacity: 1; }
+
+/* Подвал в три колонки */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .8fr 1fr;
+  gap: clamp(22px, 3.4vw, 48px);
+  align-items: start;
+}
+.footer-grid p { margin: 0 0 8px; }
+.footer-h {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: .95rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: .01em;
+}
+.footer-links { display: flex; flex-direction: column; gap: 7px; }
+.footer-links a { color: #c9d4e0; text-decoration: none; }
+.footer-links a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.footer-contact { display: flex; flex-direction: column; gap: 6px; }
+.footer-contact a { color: #fff; text-decoration: none; }
+.footer-contact a:hover { text-decoration: underline; }
+
+@media (max-width: 860px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .footer-grid { grid-template-columns: 1fr; }
+}

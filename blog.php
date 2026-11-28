@@ -169,7 +169,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="stylesheet" href="/assets/style.css?v=20261156">
+<link rel="stylesheet" href="/assets/style.css?v=20261161">
 <?php if ($post !== null): ?>
 <script type="application/ld+json">
 {
@@ -190,7 +190,7 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/index.html" aria-label="Интер-Техника-Плюс — на главную">
-      <img class="brand-logo" src="/assets/logo.png?v=20261156" alt="Интер-Техника-Плюс" width="112" height="44">
+      <img class="brand-logo" src="/assets/logo.png?v=20261161" alt="Интер-Техника-Плюс" width="112" height="44">
       <span class="brand-name">Интер-Техника<span class="brand-plus">+</span></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
@@ -199,11 +199,12 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     </button>
     <nav class="nav" id="nav" aria-label="Основная навигация">
       <a href="/index.html#services">Услуги</a>
-      <a href="/new.html">Новая техника</a>
+      <a href="/new.html">Техника</a>
       <a href="/used.html">Барахолка</a>
       <a href="/blog/" aria-current="page">Блог</a>
       <a href="/index.html#contacts">Контакты</a>
-      <a href="/requisites.html">Реквизиты</a>
+      <a class="nav__legal" href="/requisites.html">Реквизиты</a>
+      <a class="btn btn--sm" href="tel:+74932353070">+7 4932 353070</a>
     </nav>
   </div>
 </header>
@@ -360,9 +361,10 @@ $ogImage = $post !== null && (string) $post['cover'] !== ''
     <nav aria-label="Служебные ссылки">
       <a href="/index.html">На главную</a>
       <a href="/blog/">Блог</a>
+      <a class="btn btn--sm" href="tel:+74932353070">+7 4932 353070</a>
     </nav>
   </div>
 </footer>
-<script src="/assets/app.js?v=20261156" defer></script>
+<script src="/assets/app.js?v=20261161" defer></script>
 </body>
 </html>

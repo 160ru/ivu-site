@@ -113,17 +113,6 @@
       order.textContent = "Заказать";
       actions.appendChild(order);
 
-      var call = document.createElement("a");
-      call.className = "btn btn--sm btn--ghost";
-      call.href = "tel:+74932353070";
-      call.textContent = "Позвонить";
-      actions.appendChild(call);
-      var more = document.createElement("a");
-      more.className = "btn btn--sm btn--ghost";
-      more.href = "tovar/" + item.id;
-      more.textContent = "Подробнее";
-      actions.appendChild(more);
-
       body.appendChild(actions);
     }
 
@@ -139,6 +128,14 @@
       body.appendChild(avitoRow);
     }
 
+    var secondary = el("p", "product__secondary");
+
+    var call = document.createElement("a");
+    call.className = "product__link";
+    call.href = "tel:+74932353070";
+    call.textContent = "+7 4932 353070";
+    secondary.appendChild(call);
+
     var questionsRow = el("p", "product__questions");
     var questionsLink = document.createElement("button");
     questionsLink.type = "button";
@@ -148,7 +145,8 @@
       openQuestions(item);
     });
     questionsRow.appendChild(questionsLink);
-    body.appendChild(questionsRow);
+    secondary.appendChild(questionsRow);
+    body.appendChild(secondary);
 
     article.appendChild(body);
     return article;
