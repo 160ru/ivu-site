@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /catalog-api.php
+Disallow: /comments-api.php
+Disallow: /auth.php
 
 Sitemap: https://ivu.ru/sitemap.xml

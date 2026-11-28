@@ -31,6 +31,9 @@ ErrorDocument 404 /404.html
   # 2. http -> https
   RewriteCond %{HTTPS} !=on
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # 3. старый адрес прежнего сайта — на актуальную страницу реквизитов
+  RewriteRule ^requirements\.html$ https://ivu.ru/requisites.html [R=301,L]
 </IfModule>
 
 # Сжатие текстовых файлов
