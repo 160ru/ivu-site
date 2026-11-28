@@ -55,16 +55,29 @@ function formatBody(string $text): string
                 if ($item === '') {
                     continue;
                 }
-                $html .= '  <li>' . e(preg_replace('/^-\s*/', '', $item) ?? '') . '</li>' . "\n";
+                $html .= '  <li>' . links(e(preg_replace('/^-\s*/', '', $item) ?? '')) . '</li>' . "\n";
             }
             $html .= '</ul>' . "\n";
             continue;
         }
-        $html .= '<p>' . nl2br(e($block)) . '</p>' . "\n";
+        $html .= '<p>' . links(nl2br(e($block))) . '</p>' . "\n";
     }
     return $html;
 }
 
+
+/** Превращает [текст](адрес) в ссылку. Адрес — только http(s) или путь от корня. */
+function links(string $html): string
+{
+    return preg_replace_callback(
+        '/\[([^\]]{1,120})\]\((https?:\/\/[^)\s]{1,300}|\/[^)\s]{0,300})\)/u',
+        static function (array $match): string {
+            $url = htmlspecialchars($match[2], ENT_QUOTES, 'UTF-8');
+            return '<a href="' . $url . '">' . $match[1] . '</a>';
+        },
+        $html
+    ) ?? $html;
+}
 $pdo = null;
 $posts = [];
 $post = null;

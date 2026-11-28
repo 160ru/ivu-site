@@ -57,7 +57,15 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
             if (strpos($paragraph, '## ') === 0) {
                 echo '<h2>' . htmlspecialchars(mb_substr($paragraph, 3), ENT_QUOTES, 'UTF-8') . '</h2>';
             } else {
-                echo '<p>' . nl2br(htmlspecialchars($paragraph, ENT_QUOTES, 'UTF-8')) . '</p>';
+                $safe = nl2br(htmlspecialchars($paragraph, ENT_QUOTES, 'UTF-8'));
+                $safe = preg_replace_callback(
+                    '/\[([^\]]{1,120})\]\((https?:\/\/[^)\s]{1,300}|\/[^)\s]{0,300})\)/u',
+                    static function (array $m): string {
+                        return '<a href="' . htmlspecialchars($m[2], ENT_QUOTES, 'UTF-8') . '">' . $m[1] . '</a>';
+                    },
+                    $safe
+                ) ?? $safe;
+                echo '<p>' . $safe . '</p>';
             }
         }
       ?>]]></content:encoded>
