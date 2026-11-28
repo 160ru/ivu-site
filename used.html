@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Барахолка — б/у техника с гарантией, Интер-Техника-Плюс</title>
   <meta name="description" content="Барахолка: б/у компьютеры, комплектующие и офисная техника после проверки. Иваново, ул. Степанова, 24. Работаем с юрлицами по договору.">
+    <meta name="theme-color" content="#3060a0">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Интер-Техника-Плюс">
+  <meta property="og:title" content="Барахолка — б/у техника, Интер-Техника-Плюс">
+  <meta property="og:description" content="Барахолка: б/у компьютеры, комплектующие и офисная техника после проверки. Иваново, ул. Степанова, 24.">
+  <meta property="og:url" content="https://ivu.ru/used.html">
+  <meta property="og:image" content="https://ivu.ru/assets/og-used.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://ivu.ru/used.html">
   <link rel="icon" href="assets/favicon.ico" sizes="any">
   <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
@@ -43,6 +54,32 @@
         и настроена. Состояние и цену смотрите у каждого лота.
       </p>
     </header>
+
+    <div class="catalog-filters">
+      <div class="catalog-filters__row">
+        <label class="catalog-filters__field">
+          <span>Цена от</span>
+          <input type="number" id="filter-min" min="0" step="100" placeholder="0">
+        </label>
+        <label class="catalog-filters__field">
+          <span>до</span>
+          <input type="number" id="filter-max" min="0" step="100" placeholder="любая">
+        </label>
+        <label class="catalog-filters__field">
+          <span>Сортировка</span>
+          <select id="filter-sort">
+            <option value="new">сначала новые</option>
+            <option value="price_asc">сначала дешевле</option>
+            <option value="price_desc">сначала дороже</option>
+          </select>
+        </label>
+        <label class="catalog-filters__check">
+          <input type="checkbox" id="filter-stock" checked>
+          <span>только в наличии</span>
+        </label>
+        <button type="button" class="catalog-filters__reset" id="filter-reset">Сбросить</button>
+      </div>
+    </div>
 
     <p class="catalog-search">
       <input type="search" id="catalog-search" placeholder="Поиск по названию или описанию" aria-label="Поиск по каталогу">

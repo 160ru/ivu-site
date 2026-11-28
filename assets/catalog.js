@@ -397,7 +397,11 @@
 
     var url = API + "?cat=" + encodeURIComponent(category) +
       "&page=" + state.page + "&per=" + PER +
-      (state.query ? "&q=" + encodeURIComponent(state.query) : "");
+      (state.query ? "&q=" + encodeURIComponent(state.query) : "") +
+      (state.priceMin ? "&price_min=" + state.priceMin : "") +
+      (state.priceMax ? "&price_max=" + state.priceMax : "") +
+      (state.stock ? "&stock=1" : "") +
+      (state.sort && state.sort !== "new" ? "&sort=" + encodeURIComponent(state.sort) : "");
 
     fetch(url, { headers: { "Accept": "application/json" } })
       .then(function (response) {
@@ -435,19 +439,51 @@
       });
   }
 
-  // поиск
+  // поиск и фильтры
   var searchBox = document.getElementById("catalog-search");
-  if (searchBox) {
-    var timer = null;
-    searchBox.addEventListener("input", function () {
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        state.query = searchBox.value.trim();
-        state.page = 1;
-        load(false);
-      }, 350);
+  var minBox = document.getElementById("filter-min");
+  var maxBox = document.getElementById("filter-max");
+  var sortBox = document.getElementById("filter-sort");
+  var stockBox = document.getElementById("filter-stock");
+  var resetBtn = document.getElementById("filter-reset");
+
+  function collectFilters() {
+    state.query = searchBox ? searchBox.value.trim() : "";
+    state.priceMin = minBox && minBox.value ? Math.max(0, parseInt(minBox.value, 10) || 0) : 0;
+    state.priceMax = maxBox && maxBox.value ? Math.max(0, parseInt(maxBox.value, 10) || 0) : 0;
+    state.sort = sortBox ? sortBox.value : "new";
+    state.stock = stockBox ? stockBox.checked : false;
+  }
+
+  function reloadWithFilters() {
+    collectFilters();
+    state.page = 1;
+    load(false);
+  }
+
+  var debounce = null;
+  function debouncedReload() {
+    clearTimeout(debounce);
+    debounce = setTimeout(reloadWithFilters, 400);
+  }
+
+  if (searchBox) searchBox.addEventListener("input", debouncedReload);
+  if (minBox) minBox.addEventListener("input", debouncedReload);
+  if (maxBox) maxBox.addEventListener("input", debouncedReload);
+  if (sortBox) sortBox.addEventListener("change", reloadWithFilters);
+  if (stockBox) stockBox.addEventListener("change", reloadWithFilters);
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      if (searchBox) searchBox.value = "";
+      if (minBox) minBox.value = "";
+      if (maxBox) maxBox.value = "";
+      if (sortBox) sortBox.value = "new";
+      if (stockBox) stockBox.checked = true;
+      reloadWithFilters();
     });
   }
 
+  collectFilters();
   load(false);
 })();

@@ -225,6 +225,7 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $fields = [
             'category' => $category,
             'title' => $title,
+            'search_text' => mb_strtolower(trim($title . ' ' . trim((string) ($_POST['description'] ?? ''))), 'UTF-8'),
             'price' => max(0, (int) ($_POST['price'] ?? 0)),
             'condition' => trim((string) ($_POST['condition'] ?? '')),
             'shown_date' => trim((string) ($_POST['shown_date'] ?? '')),
@@ -236,15 +237,15 @@ if ($authorized && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($title === '') {
             $error = 'Название обязательно';
         } elseif ($id > 0) {
-            $stmt = db()->prepare('UPDATE items SET category=:category, title=:title, price=:price,
+            $stmt = db()->prepare('UPDATE items SET category=:category, title=:title, search_text=:search_text, price=:price,
                 condition=:condition, shown_date=:shown_date, description=:description,
                 avito=:avito, sold=:sold WHERE id=:id');
             $stmt->execute($fields + [':id' => $id]);
             $message = 'Товар обновлён';
         } else {
             $fields['created'] = date('c');
-            $stmt = db()->prepare('INSERT INTO items (category, title, price, condition, shown_date,
-                description, avito, sold, created) VALUES (:category, :title, :price, :condition,
+            $stmt = db()->prepare('INSERT INTO items (category, title, search_text, price, condition, shown_date,
+                description, avito, sold, created) VALUES (:category, :title, :search_text, :price, :condition,
                 :shown_date, :description, :avito, :sold, :created)');
             $stmt->execute($fields);
             $id = (int) db()->lastInsertId();
